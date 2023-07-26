@@ -1,8 +1,21 @@
 {
   "name": "widget.ts",
   "version": "1.0.1",
-  "description": "A library for Front-end nested programming.",
+  "description": "A Front-end library.",
   "main": "dev/index.ts",
   "author": "defaultkavy",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/defaultkavy/widget.ts.git"
+  },
+  "keywords": [
+    "widget",
+    "widget.ts",
+    "widget.js"
+  ],
+  "bugs": {
+    "url": "https://github.com/defaultkavy/widget.ts/issues"
+  },
+  "homepage": "https://github.com/defaultkavy/widget.ts#readme"
 }
