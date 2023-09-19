@@ -1,18 +1,18 @@
 import { Optional, ParentWidget, ParentWidgetOptions } from "./ParentWidget";
 
 export class FormWidget extends ParentWidget {
-    override readonly element: HTMLFormElement = this.element;
+    override readonly dom: HTMLFormElement = this.dom;
     constructor(options?: FormWidgetBuildOptions) {
         super({...options, tagName: 'form'})
     }
 
     action(url: string) {
-        this.element.action = url;
+        this.dom.action = url;
         return this;
     }
 
     method(method: 'GET' | 'POST') {
-        this.element.method = method;
+        this.dom.method = method;
         return this;
     }
 
@@ -25,8 +25,8 @@ export class FormWidget extends ParentWidget {
     autocomplete(): boolean ;
     autocomplete(enable: Optional<boolean>): this;
     autocomplete(enable?: Optional<boolean>): this | boolean {
-        if (!arguments.length) return this.element.autocomplete === 'on' ? true : false;
-        if (typeof enable === 'boolean') this.element.autocomplete = enable ? 'on' : 'off';
+        if (!arguments.length) return this.dom.autocomplete === 'on' ? true : false;
+        if (typeof enable === 'boolean') this.dom.autocomplete = enable ? 'on' : 'off';
         return this;
     }
 }

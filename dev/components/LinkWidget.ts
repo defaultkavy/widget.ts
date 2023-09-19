@@ -2,19 +2,19 @@ import { __widget_shared__ } from "../index";
 import { ParentWidget, ParentWidgetOptions } from "./ParentWidget";
 
 export class LinkWidget extends ParentWidget {
-    override readonly element: HTMLAnchorElement = this.element;
+    override readonly dom: HTMLAnchorElement = this.dom;
     loadFn?: (url: string, e: Event, w: this) => void;
     override readonly focusable = true;
     constructor(options?: LinkWidgetBuildOptions) {
         super({...options, tagName: 'a'});
         if (options) {
-            if (options.url) this.element.href = options.url;
+            if (options.url) this.dom.href = options.url;
         }
-        this.element.addEventListener('click', e => {
+        this.dom.addEventListener('click', e => {
             if (!this.url()) return;
             if (this.loadFn || __widget_shared__.linkFunction) {
                 e.preventDefault();
-                if (this.loadFn) this.loadFn(this.element.href, e, this);
+                if (this.loadFn) this.loadFn(this.dom.href, e, this);
                 else if (__widget_shared__.linkFunction) __widget_shared__.linkFunction(this.url())
             }
         })
@@ -23,8 +23,8 @@ export class LinkWidget extends ParentWidget {
     url(): string;
     url(url?: string, loadFn?: (url: string, e: Event, w: this) => void): this;
     url(url?: string, loadFn?: (url: string, e: Event, w: this) => void): this | string {
-        if (!arguments.length) return this.element.href;
-        if (typeof url === 'string') this.element.href = url;
+        if (!arguments.length) return this.dom.href;
+        if (typeof url === 'string') this.dom.href = url;
         this.loadFn = loadFn;
         return this;
     }

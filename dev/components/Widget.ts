@@ -3,49 +3,49 @@ import { WidgetTagNameMap, __widget_shared__ } from "../index";
 import { ParentWidget } from "./ParentWidget";
 
 export class Widget {
-    readonly element: HTMLElement;
+    readonly dom: HTMLElement;
     readonly parent?: ParentWidget;
     readonly focusable: boolean = false;
     private readonly __onRemove__: Set<(widget: Widget) => void> = new Set;
     private __listeners__: Map<Function, Function> = new Map;
     readonly hidden: boolean = false;
     constructor(options: WidgetBuildOptions) {
-        this.element = document.createElement(options.tagName);
+        this.dom = document.createElement(options.tagName);
         this.id(options.id);
-        this.element.$widget = this;
+        this.dom.$widget = this;
         if (options.class) this.class(...options.class);
     }
 
     id(): string;
     id(id: string | undefined): this;
     id(id?: string | undefined): this | string {
-        if (!arguments.length) return this.element.id;
+        if (!arguments.length) return this.dom.id;
         if (id === undefined) return this;
-        this.element.id = id;
+        this.dom.id = id;
         return this;
     }
 
     class(): DOMTokenList;
     class(...token: (string | undefined)[]): this;
     class(...token: (string | undefined)[]): this | DOMTokenList {
-        if (!token.length) return this.element.classList;
-        this.element.classList.add(...(token.map(t => t ?? '')));
+        if (!token.length) return this.dom.classList;
+        this.dom.classList.add(...(token.map(t => t ?? '')));
         return this;
     }
 
     setAttribute(name: string, value: string) {
-        this.element.setAttribute(name, value)
+        this.dom.setAttribute(name, value)
         return this;
     }
 
     unsetAttribute(name: string) {
-        this.element.removeAttribute(name)
+        this.dom.removeAttribute(name)
         return this;
     }
 
     unsetClass(...token: (string | undefined)[]) {
         if (!token.length) return this;
-        this.element.classList.remove(...(token.map(t => t ?? '')));
+        this.dom.classList.remove(...(token.map(t => t ?? '')));
         return this;
     }
 
@@ -59,7 +59,7 @@ export class Widget {
     css(options: CSSOptions) {
         for (const string in options) {
             const value = options[string]
-            if (typeof value === 'string') this.element.style[string] = value;
+            if (typeof value === 'string') this.dom.style[string] = value;
         }
         return this;
     }
@@ -73,35 +73,35 @@ export class Widget {
             // Check parent widget children is not include this widget.
             if (this.parent.children.has(this)) this.parent.children.delete(this);
         }
-        this.element.remove();
+        this.dom.remove();
         this.__event__('__onRemove__');
         return this;
     }
 
-    hide() {
+    hide(reflow: boolean = true) {
         (<Mutable<Widget>>this).hidden = true;
-        if (this.parent) this.parent.children.build();
+        if (reflow && this.parent) this.parent.children.build();
         return this;
     }
 
-    show() {
+    show(reflow: boolean = true) {
         (<Mutable<Widget>>this).hidden = false;
-        if (this.parent) this.parent.children.build();
+        if (reflow && this.parent) this.parent.children.build();
         return this;
     }
 
     setListener<K extends keyof HTMLElementEventMap>(type: K, listener: ListenerFunction<HTMLElementEventMap, K, this>, options?: boolean | AddEventListenerOptions): this {
         const fn = (e: HTMLElementEventMap[K]) => listener.bind(this, e, this)()
         this.__listeners__.set(listener, fn);
-        this.element.addEventListener(type, fn);
+        this.dom.addEventListener(type, fn);
         return this;
     }
 
-    removeListener<K extends keyof HTMLElementEventMap>(type: K, listener: ListenerFunction<HTMLElementEventMap, K, this>, options?: boolean | AddEventListenerOptions): this {
+    unsetListener<K extends keyof HTMLElementEventMap>(type: K, listener: ListenerFunction<HTMLElementEventMap, K, this>, options?: boolean | AddEventListenerOptions): this {
         const fn = this.__listeners__.get(listener);
         if (!fn) return this;
         //@ts-expect-error
-        this.element.removeEventListener(type, fn);
+        this.dom.removeEventListener(type, fn);
         return this;
     }
 
@@ -111,7 +111,7 @@ export class Widget {
      * @returns {this}
      */
     focus(): this {
-        this.element.focus();
+        this.dom.focus();
         return this;
     }
 
@@ -124,12 +124,12 @@ export class Widget {
      */
 
     blur(): this {
-        this.element.blur();
+        this.dom.blur();
         return this;
     }
 
     is<T extends keyof WidgetTagNameMap>(tagname: T): this is WidgetTagNameMap[T] {
-        return this.element.tagName === tagname.toUpperCase();
+        return this.dom.tagName === tagname.toUpperCase();
     }
 
     $this(fn?: (widget: this) => void) {
@@ -138,7 +138,7 @@ export class Widget {
     }
 
     execute() {
-        this.element.click();
+        this.dom.click();
         return this;
     }
 
@@ -151,7 +151,7 @@ export class Widget {
             }
         }
 
-        return findDoc(this.element);
+        return findDoc(this.dom);
     }
 
     onRemove(callback: (widget: this) => void) {
@@ -187,7 +187,7 @@ export type CSSOptions = {
 export type ListenerFunction<M extends {[key: string]: any}, K extends keyof M, W extends Widget> = (this: W, ev: M[K], widget: W) => any;
 
 
-type Arguments = {
+export type Arguments = {
     [key: string]: any[]
 }
 export type EventFunction<T extends Arguments, K extends keyof T> = (...args: T[K]) => void;

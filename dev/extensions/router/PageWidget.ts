@@ -1,17 +1,20 @@
-import { ParentWidget } from "../../components/ParentWidget";
+import { ParentWidget, ParentWidgetOptions } from "../../components/ParentWidget";
 import { Mutable } from "../../global";
+import { TitleStyle } from "./ViewWidget";
 
 export class PageWidget extends ParentWidget {
-    constructor(path: string, initFn: PageInitFunction<PageWidget>) {
-        super({tagName: 'page'})
+    constructor(path: string, options: PageWidgetOptions<PageWidget>) {
+        super({tagName: 'page', ...options})
         this.path = path;
-        this.initFn = initFn
+        this.initFn = options.init;
+        this.titleStyle = options.titleStyle;
     }
     path: string;
-    initFn: PageInitFunction<this>;
+    readonly initFn: PageInitFunction<this>;
     #name?: string;
     readonly initialized: boolean = false;
     readonly opened: boolean = false;
+    titleStyle?: TitleStyle;
     _listeners = {
         init: new Set<(widget: this) => void>,
         open: new Set<(widget: this) => void>,
@@ -33,11 +36,15 @@ export class PageWidget extends ParentWidget {
         return this;
     }
 
+    /**
+     * Page name getter and setter, set the name will change document title.
+     */
     name(): string | undefined
     name(name: string | undefined): this
     name(name?: string | undefined): this | string | undefined {
-        if (!arguments.length) return this.#name
-        this.#name = name;
+        if (!arguments.length) return this.#name;
+        if (typeof name === 'string') this.#name = name;
+        this.setTitle();
         return this;
     }
 
@@ -60,6 +67,21 @@ export class PageWidget extends ParentWidget {
         this._listeners[type].add(fn);
         return this;
     }
+
+    setTitle() {
+        const PAGE_NAME = this.name();
+        if (!this.opened) return;
+        if (PAGE_NAME) {
+            if (this.titleStyle && this.titleStyle.pageName) document.title = this.titleStyle.pageName.replaceAll('$1', `${PAGE_NAME}`);
+        } else {
+            if (this.titleStyle && this.titleStyle.default) document.title = this.titleStyle.default;            
+        }
+    }
 }
 
-export type PageInitFunction<P> = (page: P) => Promise<void> | void;
+export type PageInitFunction<P extends PageWidget> = (page: P) => Promise<void> | void;
+
+export interface PageWidgetOptions<P extends PageWidget> extends Omit<ParentWidgetOptions, 'tagName'> {
+    init: PageInitFunction<P>,
+    titleStyle?: TitleStyle;
+}

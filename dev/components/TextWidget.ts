@@ -7,7 +7,7 @@ import { Content, ParentWidget, ParentWidgetOptions, WidgetContent } from "./Par
  * @class
  */
 export class TextWidget extends ParentWidget {
-    override readonly element: HTMLParagraphElement | HTMLHeadingElement | HTMLElement = this.element;
+    override readonly dom: HTMLParagraphElement | HTMLHeadingElement | HTMLElement = this.dom;
     readonly type: keyof TextWidgetTypeMap;
     constructor(type: keyof TextWidgetTypeMap, options?: TextWidgetBuildOptions) {
         super({
@@ -30,8 +30,8 @@ export interface TextWidgetOptions extends ParentWidgetOptions {}
 
 interface TextWidgetBuilderOptions extends Omit<TextWidgetBuildOptions, 'type'> {}
 
-interface TextParagraphWidget extends TextWidget { element: HTMLParagraphElement }
-interface TextHeadingWidget extends TextWidget { element: HTMLHeadingElement }
+interface TextParagraphWidget extends TextWidget { dom: HTMLParagraphElement }
+interface TextHeadingWidget extends TextWidget { dom: HTMLHeadingElement }
 type HeadingTypes = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 type TextTypes = 'strong' | 'em' | 'code' | 'blockquote' | "del"
 

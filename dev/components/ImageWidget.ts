@@ -1,7 +1,7 @@
 import { Widget, WidgetOptions } from "./Widget";
 
 export class ImageWidget extends Widget {
-    override readonly element: HTMLImageElement = this.element;
+    override readonly dom: HTMLImageElement = this.dom;
     anchor: [number, number] = [0.5, 0.5];
     constructor(options?: ImageWidgetBuildOptions) {
         super({...options, tagName: 'img'})
@@ -11,37 +11,45 @@ export class ImageWidget extends Widget {
     src(): string
     src(content?: ImageContent, dimension?: Dimension): this;
     src(content?: ImageContent, dimension?: Dimension): this | string {
-        if (!arguments.length) return this.element.src;
+        if (!arguments.length) return this.dom.src;
         if (content === undefined) return this;
         if (content instanceof File) {
             const reader = new FileReader();
             reader.readAsDataURL(content)
             reader.onload = (e) => {
                 if (dimension) 
-                    ImageWidget.imageResizer(reader.result!.toString(), dimension).then(url => this.element.src = url);
-                else this.element.src = reader.result!.toString();
+                    ImageWidget.imageResizer(reader.result!.toString(), dimension).then(url => this.dom.src = url);
+                else this.dom.src = reader.result!.toString();
             }
         } else {
-            if (!content.length) this.element.removeAttribute('src');
-            else if (dimension) ImageWidget.imageResizer(content, dimension).then(url => this.element.src = url);
-            else this.element.src = content;
+            if (!content.length) this.dom.removeAttribute('src');
+            else if (dimension) ImageWidget.imageResizer(content, dimension).then(url => this.dom.src = url);
+            else this.dom.src = content;
         }
         return this;
     }
 
+    loading(): string;
+    loading(type: 'eager' | 'lazy'): this;
+    loading(type?: 'eager' | 'lazy'): this | string {
+        if (!arguments.length) return this.dom.loading;
+        if (typeof type === 'string') this.dom.loading = type;
+        return this;
+    }
+
     set asset(asset: ImageAssetOptions) {
-        this.element.src = asset.url;
+        this.dom.src = asset.url;
         if (asset.anchor) this.anchor = asset.anchor;
     }
 
     options(options: ImageWidgetBuildOptions): this {
         super.options(options);
-        this.element.src = options.url;
-        if (options.alt) this.element.alt = options.alt;
+        this.dom.src = options.url;
+        if (options.alt) this.dom.alt = options.alt;
         if (options.anchor) this.anchor = options.anchor;
-        if (options.lazyload) this.element.loading = 'lazy';
-        if (options.width) this.element.width = options.width;
-        if (options.height) this.element.height = options.height;
+        if (options.lazyload) this.dom.loading = 'lazy';
+        if (options.width) this.dom.width = options.width;
+        if (options.height) this.dom.height = options.height;
         return this;
     }
 

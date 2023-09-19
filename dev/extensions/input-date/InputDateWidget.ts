@@ -19,7 +19,7 @@ export class InputDateWidget extends ExtensionInputWidget {
         this.__listen__();
     }
 
-    get isValid() { return !this.day.element.validity.customError }
+    get isValid() { return !this.day.dom.validity.customError }
 
     setDateString(style: string) {
         (<Mutable<this>>this).dateString = style;
@@ -124,7 +124,7 @@ export class InputDateWidget extends ExtensionInputWidget {
             if (this.__onInput__) this.__onInput__(event);
             if (prevent) return;
             this.__setValue__();
-            if (widget.value().length >= widget.element.maxLength) {
+            if (widget.value().length >= widget.dom.maxLength) {
                 const array = this.children.array;
                 const nextInput = array.splice(array.indexOf(widget) + 1).find(w => {
                     if (w instanceof InputWidget) return true;
@@ -163,14 +163,14 @@ export class InputDateWidget extends ExtensionInputWidget {
         
         if (this.day.value())
         if (new Date(this.value()).toString() === 'Invalid Date') {
-            this.day.element.setCustomValidity('Invalid Date')
-            this.month.element.setCustomValidity('Invalid Date')
-            this.year.element.setCustomValidity('Invalid Date')
+            this.day.dom.setCustomValidity('Invalid Date')
+            this.month.dom.setCustomValidity('Invalid Date')
+            this.year.dom.setCustomValidity('Invalid Date')
         }
         else {
-            this.day.element.setCustomValidity('');
-            this.month.element.setCustomValidity('');
-            this.year.element.setCustomValidity('');
+            this.day.dom.setCustomValidity('');
+            this.month.dom.setCustomValidity('');
+            this.year.dom.setCustomValidity('');
         }
     }
 }

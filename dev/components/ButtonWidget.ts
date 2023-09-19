@@ -1,7 +1,7 @@
 import { ParentWidget, ParentWidgetOptions } from "./ParentWidget";
 
 export class ButtonWidget extends ParentWidget {
-    override readonly element: HTMLButtonElement = this.element;
+    override readonly dom: HTMLButtonElement = this.dom;
     constructor(options?: ButtonWidgetBuildOptions) {
         super({...options, tagName: 'button'})
     }

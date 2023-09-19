@@ -16,11 +16,11 @@ const CHILD_OBSERVER = new MutationObserver(p1 => {
     })
 })
 export class ParentWidget extends Widget {
-    override readonly element: HTMLElement = this.element;
+    override readonly dom: HTMLElement = this.dom;
     readonly children = new WidgetManager(this);
     constructor(options: ParentWidgetBuildOptions) {
         super({...options, tagName: options.tagName})
-        CHILD_OBSERVER.observe(this.element, {childList: true})
+        CHILD_OBSERVER.observe(this.dom, {childList: true})
     }
 
     /**
@@ -36,7 +36,7 @@ export class ParentWidget extends Widget {
      */
     content(resolver: Complex<Multable<Optional<Content>>>): this;
     content(resolver?: Complex<Multable<Optional<Content>>>): this | string {
-        if (!arguments.length) return this.element.innerText;
+        if (!arguments.length) return this.dom.innerText;
         this.clear();
         this.insert(resolver);
         return this;
@@ -80,7 +80,7 @@ export class ParentWidget extends Widget {
 
     options(options: ParentWidgetOptions): this {
         super.options(options);
-        if (options.editable) this.element.contentEditable = 'true';
+        if (options.editable) this.dom.contentEditable = 'true';
         return this;
     }
 
@@ -92,7 +92,7 @@ export class ParentWidget extends Widget {
             }
             else if (content instanceof InputWidget) {
                 content.id(name);
-                content.element.name = name;
+                content.dom.name = name;
             }
             else if (content instanceof ExtensionInputWidget) {
                 content.name(name);
@@ -103,11 +103,11 @@ export class ParentWidget extends Widget {
     }
 
     editable(): string
-    editable(value: boolean): this
-    editable(value?: boolean) {
-        if (!arguments.length) return this.element.contentEditable;
+    editable(value: boolean | 'plaintext-only'): this
+    editable(value?: boolean | 'plaintext-only') {
+        if (!arguments.length) return this.dom.contentEditable;
         if (value === undefined) return this;
-        this.element.contentEditable = `${value}`
+        this.dom.contentEditable = `${value}`
         return this;
     }
 }
@@ -141,8 +141,8 @@ export abstract class ExtensionInputWidget extends ParentWidget {
     }
     
     value(): string;
-    value(value?: string): this;
-    value(value?: string): this | string {
+    value(value?: string | undefined): this;
+    value(value?: string | undefined): this | string {
         if (!arguments.length) return this.hidden_input.value();
         if (value === undefined) return this;
         this.hidden_input.value(value);

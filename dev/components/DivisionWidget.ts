@@ -7,7 +7,7 @@ import { ParentWidget, ParentWidgetOptions } from "./ParentWidget";
  * @extends ParentWidget
  */
 export class DivisionWidget extends ParentWidget {
-    override readonly element: HTMLDivElement = this.element;
+    override readonly dom: HTMLDivElement = this.dom;
     constructor(options?: DivisionWidgetBuildOptions) {
         super({...options, tagName: 'div'})
     }

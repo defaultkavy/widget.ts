@@ -1,9 +1,12 @@
 import { ExtensionInputWidget } from "../../components/ParentWidget";
-import { $w } from "../../index";
+import { $w, EventFunction } from "../../index";
 
 export class InputTextareaWidget extends ExtensionInputWidget {
-    $textarea = $w('span').class('content').editable(true);
-    $placeholder = $w('span').class('placeholder')
+    $textarea = $w('div').class('content').editable('plaintext-only');
+    $placeholder = $w('span').class('placeholder');
+    private _events_ = {
+        input: new Set as Set<EventFunction<InputTextareaWidgetEvents, 'input'>>
+    }
     constructor() {
         super({
             tagName: 'input-textarea'
@@ -13,7 +16,7 @@ export class InputTextareaWidget extends ExtensionInputWidget {
     }
     
     value(): string;
-    value(value: string): this;
+    value(value: string | undefined): this;
     value(value?: string | undefined): string | this {
         if (!arguments.length) return super.value();
         this.$textarea.content(value);
@@ -23,6 +26,11 @@ export class InputTextareaWidget extends ExtensionInputWidget {
 
     placeholder(text: string) {
         this.$placeholder.content(text);
+        return this;
+    }
+
+    on<K extends keyof InputTextareaWidgetEvents>(event: K, listener: EventFunction<InputTextareaWidgetEvents, K>) {
+        this._events_.input.add(listener);
         return this;
     }
 
@@ -37,6 +45,11 @@ export class InputTextareaWidget extends ExtensionInputWidget {
         new MutationObserver(() => {
             super.value(this.$textarea.content())
             this.$textarea.content() !== '' ? this.$placeholder.hide() : this.$placeholder.show();
-        }).observe(this.$textarea.element, {characterData: true, childList: true, subtree: true})
+            this._events_.input.forEach(fn => fn(this))
+        }).observe(this.$textarea.dom, {characterData: true, childList: true, subtree: true})
     }
+}
+
+export type InputTextareaWidgetEvents = {
+    'input': [widget: InputTextareaWidget];
 }

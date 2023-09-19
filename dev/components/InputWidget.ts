@@ -2,7 +2,7 @@ import { Optional } from "./ParentWidget";
 import { Widget, WidgetOptions } from "./Widget";
 
 export class InputWidget extends Widget {
-    override readonly element: HTMLInputElement = this.element;
+    override readonly dom: HTMLInputElement = this.dom;
     constructor(options?: InputWidgetBuildOptions) {
         super({...options, tagName: 'input'})
     }
@@ -10,36 +10,36 @@ export class InputWidget extends Widget {
     type(): string
     type(type?: keyof InputWidgetTypes): this
     type(type?: keyof InputWidgetTypes) {
-        if (!arguments.length) return this.element.type;
+        if (!arguments.length) return this.dom.type;
         if (type === undefined) return this;
-        this.element.type = type;
+        this.dom.type = type;
         return this;
     }
 
     placeholder(): string
     placeholder(text: string): this
     placeholder(text?: string): this | string {
-        if (!arguments.length) return this.element.placeholder;
+        if (!arguments.length) return this.dom.placeholder;
         if (text === undefined) return this;
-        this.element.placeholder = text;
+        this.dom.placeholder = text;
         return this;
     }
 
     maxLength(): number
     maxLength(length: number): this
     maxLength(length?: number) {
-        if (!arguments.length) return this.element.maxLength;
+        if (!arguments.length) return this.dom.maxLength;
         if (length === undefined) return this;
-        this.element.maxLength = length;
+        this.dom.maxLength = length;
         return this
     }
 
     inputMode(): string
     inputMode(mode: InputMode): this
     inputMode(mode?: InputMode): this | string {
-        if (!arguments.length) return this.element.inputMode;
+        if (!arguments.length) return this.dom.inputMode;
         if (mode === undefined) return this;
-        this.element.inputMode = mode;
+        this.dom.inputMode = mode;
         return this;
     }
 
@@ -47,9 +47,9 @@ export class InputWidget extends Widget {
     name(): string
     name(name: string | undefined): this
     name(name?: string | undefined): this | string {
-        if (!arguments.length) return this.element.name;
+        if (!arguments.length) return this.dom.name;
         if (name === undefined) return this;
-        this.element.name = name;
+        this.dom.name = name;
         return this;
     }
 
@@ -64,33 +64,33 @@ export class InputWidget extends Widget {
     value(): string;
     value(value: Optional<string>): this;
     value(value?: Optional<string>): this | string {
-        if (!arguments.length) return this.element.value;
+        if (!arguments.length) return this.dom.value;
         if (value === undefined) return this;
-        this.element.value = value;
+        this.dom.value = value;
         return this;
     }
 
     accept(): string
     accept(...fileType: InputFileAcceptTypes[]): this
     accept(...fileType: InputFileAcceptTypes[]): this | string {
-        if (!arguments.length) return this.element.accept;
-        this.element.accept = fileType.toString();
+        if (!arguments.length) return this.dom.accept;
+        this.dom.accept = fileType.toString();
         return this;
     }
 
     multiple(): boolean
     multiple(enable: boolean): this
     multiple(enable?: boolean): this | boolean {
-        if (!arguments.length) return this.element.multiple;
-        if (enable !== undefined) this.element.multiple = enable;
+        if (!arguments.length) return this.dom.multiple;
+        if (enable !== undefined) this.dom.multiple = enable;
         return this;
     }
 
     autocomplete(): boolean ;
     autocomplete(enable: Optional<boolean>): this;
     autocomplete(enable?: Optional<boolean>): this | boolean {
-        if (!arguments.length) return this.element.autocomplete === 'on' ? true : false;
-        if (typeof enable === 'boolean') this.element.autocomplete = enable ? 'on' : 'off';
+        if (!arguments.length) return this.dom.autocomplete === 'on' ? true : false;
+        if (typeof enable === 'boolean') this.dom.autocomplete = enable ? 'on' : 'off';
         return this;
     }
 
@@ -98,12 +98,12 @@ export class InputWidget extends Widget {
     async files(base64: boolean): Promise<string[]>;
     files(base64?: boolean): File[] | Promise<string[]> {
         if (base64 === true) {
-            if (!this.element.files) return [];
-            const array = Promise.all(Array.from(this.element.files).map(file => this.__fileRead__(file)));
+            if (!this.dom.files) return [];
+            const array = Promise.all(Array.from(this.dom.files).map(file => this.__fileRead__(file)));
             return array;
         }
-        if (!this.element.files) return [];
-        return Array.from(this.element.files);
+        if (!this.dom.files) return [];
+        return Array.from(this.dom.files);
     }
 
     private __fileRead__(file: File): Promise<string> { 

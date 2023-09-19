@@ -10,6 +10,7 @@ import { LinkWidget } from './components/LinkWidget'
 import { ListItemWidget } from './components/ListItemWidget'
 import { ListWidget } from './components/ListWidget'
 import { TextWidget } from './components/TextWidget'
+import { WidgetUtil } from './structures/WidgetUtil'
 
 export * from './components/Widget'
 export * from './components/TextWidget'
@@ -49,9 +50,11 @@ export function $w<K extends string>(tagName: K): ParentWidget;
 export function $w<K extends Widget>(widget: K): K
 export function $w<K extends WidgetCreateFn>(fn: K): ReturnType<K>
 export function $w<K extends Widget>(object: {$widget: K}): K;
+export function $w<K extends HTMLElement>(element: K): ParentWidget;
 export function $w(resolver: any) {
     if (resolver instanceof Widget) return resolver;
     if (resolver instanceof Function) return resolver();
+    if (resolver instanceof HTMLElement) WidgetUtil.widgetify(resolver);
     if (resolver['$widget'] instanceof Widget) return resolver['$widget'];
     if (typeof resolver === 'string') {
         switch (resolver) {
@@ -92,7 +95,7 @@ interface GLOBAL_OPTIONS {
 
 export type WidgetCreateFn = () => Widget;
 
-export interface WidgetTagNameMap {
+export type WidgetTagNameMap = {
     "a": LinkWidget;
     "p": TextWidget;
     "h1": TextWidget;

@@ -1,0 +1,1 @@
+{"version":3,"file":"SpanWidget.js","sourceRoot":"","sources":["../../dev/components/SpanWidget.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAuB,MAAM,gBAAgB,CAAC;AAEnE,MAAM,OAAO,UAAW,SAAQ,YAAY;IAExC,YAAY,OAAkC;QAC1C,KAAK,iCAAK,OAAO,KAAE,OAAO,EAAE,MAAM,IAAE,CAAA;QAFtB,YAAO,GAAoB,IAAI,CAAC,OAAO,CAAC;IAG1D,CAAC;CACJ"}

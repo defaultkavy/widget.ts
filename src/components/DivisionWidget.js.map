@@ -1,0 +1,1 @@
+{"version":3,"file":"DivisionWidget.js","sourceRoot":"","sources":["../../dev/components/DivisionWidget.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAuB,MAAM,gBAAgB,CAAC;AAEnE;;;;;GAKG;AACH,MAAM,OAAO,cAAe,SAAQ,YAAY;IAE5C,YAAY,OAAoC;QAC5C,KAAK,iCAAK,OAAO,KAAE,OAAO,EAAE,KAAK,IAAE,CAAA;QAFrB,YAAO,GAAmB,IAAI,CAAC,OAAO,CAAC;IAGzD,CAAC;CACJ"}

@@ -9,8 +9,8 @@ export class ListWidget<C extends WidgetContent = WidgetContent> extends ParentW
             tagName: type
         })
     }
-    override readonly element: HTMLUListElement | HTMLOListElement | HTMLDListElement = this.element;
-    listItems = new WidgetManager<ListItemWidget<C>>(this);
+    override readonly dom: HTMLUListElement | HTMLOListElement | HTMLDListElement = this.dom;
+    items = new WidgetManager<ListItemWidget<C>>(this);
     itemMap = new Map<C, ListItemWidget<C>>;
 
     item(item: Multable<Optional<Complex<C>>>, position?: number) {
@@ -19,7 +19,7 @@ export class ListWidget<C extends WidgetContent = WidgetContent> extends ParentW
             if (item === undefined) return this;
             const LIST_ITEM = this.itemMap.get(item) ?? new ListItemWidget<C>().bind(item);
             this.itemMap.set(item, LIST_ITEM);
-            this.listItems.add(LIST_ITEM, position);
+            this.items.add(LIST_ITEM, position);
             this.insert(LIST_ITEM, position);
         }
         return this;
@@ -30,15 +30,34 @@ export class ListWidget<C extends WidgetContent = WidgetContent> extends ParentW
      * @param resolver Item or array of item. Leave blank to remove this widget.
      * @returns 
      */
-    remove(resolver?: Multable<Optional<C>>) {
+    remove(resolver?: Multable<Optional<C | ListItemWidget<C>>>) {
         if (!arguments.length) return super.remove();
         if (resolver instanceof Array) resolver.forEach(item => this.remove(item))
-        else if (resolver !== undefined) this.listItems.delete(this.itemMap.get(resolver));
+        else if (resolver !== undefined) {
+            if (resolver instanceof ListItemWidget) {
+                this.itemMap.delete(resolver.item)
+                this.items.delete(resolver);
+            }
+            else {
+                const $item = this.itemMap.get(resolver);
+                this.items.delete($item)
+                this.itemMap.delete(resolver);
+            }
+        }
         return this;
     }
 
-    sort(fn: (a: Optional<C>, b: Optional<C>) => number) {
-        const ITEM_LIST = this.listItems.array.map(item => item.item);
+    clear(): this {
+        this.itemMap.forEach(item => this.remove(item))
+        super.clear();
+        return this;
+    }
+
+    sort(fn: (a: C, b: C) => number) {
+        function filterUndefined(array: Optional<C>[]): C[] {
+            return array.filter(value => value !== undefined) as C[]
+        }
+        const ITEM_LIST = filterUndefined(this.items.array.map(item => item.item));
         ITEM_LIST.sort(fn).forEach(item => this.item(item));
         return this;
     }

@@ -85,7 +85,7 @@ export class FocusManager {
             this.cache.set(widget, manager);
             // (<Mutable<Widget>>widget).focusController = this;
             if (manager) (<Mutable<FocusManager>>manager).parentFocus = this;
-            intersection.observe(widget.element);
+            intersection.observe(widget.dom);
             widget.onRemove(__remove__)
             __focus_shared__.controller_cache.set(widget, this);
         }
@@ -119,7 +119,7 @@ export class FocusManager {
             this.current = next;
         }
         else {
-            const visibleContent = [...this.cache].find(widget => widget[0].element.dataset.visible === 'true');
+            const visibleContent = [...this.cache].find(widget => widget[0].dom.dataset.visible === 'true');
             if (visibleContent) this.current = visibleContent[0];
             else {
                 const first = [...this.cache.keys()][0]
@@ -142,7 +142,7 @@ export class FocusManager {
             }
         }
         else {
-            const visibleContent = [...this.cache].find(widget => widget[0].element.dataset.visible === 'true');
+            const visibleContent = [...this.cache].find(widget => widget[0].dom.dataset.visible === 'true');
             if (visibleContent) this.current = visibleContent[0];
             else this.current = [...this.cache.keys()][0]
             if (this.current) this.current.focus();
@@ -203,7 +203,7 @@ export class FocusManager {
     private __tabIndex__() {
         const array = [...this.cache.keys()]
         for (const i in array) {
-            array[i].element.tabIndex = +i; 
+            array[i].dom.tabIndex = +i; 
         }
     }
 }

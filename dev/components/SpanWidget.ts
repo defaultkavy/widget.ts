@@ -1,8 +1,8 @@
 import { ParentWidget, ParentWidgetOptions } from "./ParentWidget";
 
 export class SpanWidget extends ParentWidget {
-    override readonly element: HTMLSpanElement = this.element;
-    constructor(options: SpanWidgetBuilderOptions) {
+    override readonly dom: HTMLSpanElement = this.dom;
+    constructor(options?: SpanWidgetBuilderOptions) {
         super({...options, tagName: 'span'})
     }
 }

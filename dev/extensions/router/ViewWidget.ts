@@ -1,7 +1,7 @@
 import { ParentWidget, ParentWidgetOptions } from "../../components/ParentWidget";
 import { Mutable } from "../../global";
 import { EventFunction } from "../../index";
-import { PageWidget, PageInitFunction } from "./PageWidget";
+import { PageWidget, PageInitFunction, PageWidgetOptions } from "./PageWidget";
 import { NavigationDirection, $r } from "./Router";
 
 export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget {
@@ -14,11 +14,12 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
         this.options(options);
         $r.assign(this);
     }
-    readonly routeInitMap: Map<string | RegExp, PageInitFunction<P>> = new Map;
+    readonly routeInitMap: Map<string | RegExp | RouteFunction, PageWidgetOptions<P>> = new Map;
     readonly routePageMap: Map<string, P> = new Map;
     readonly path: string;
     readonly currentPage?: P;
     readonly Page: new (...args: any[]) => any = PageWidget;
+    titleStyle?: TitleStyle;
     private __transition_handler__?: (oldPage: P | undefined, newPage: P, navDir: NavigationDirection) => void;
     private __process_fn_cache__: Set<PageProcessFunction<P>> = new Set;
     private _listeners = {
@@ -30,16 +31,21 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
         if (options === undefined) return this;
         super.options(options);
         if (options.page) (<Mutable<ViewWidget<P>>>this).Page = options.page;
+        if (options.titleStyle) this.titleStyle = options.titleStyle;
         return this
     }
 
-    route(path: string | RegExp, fn: PageInitFunction<P>) {
-        this.__add__(path, fn);
+    route(path: string | RegExp | RouteFunction, fn:  PageInitFunction<P>): this;
+    route(path: string | RegExp | RouteFunction, options:  PageWidgetOptions<P>): this;
+    route(path: string | RegExp | RouteFunction, resovler: PageWidgetOptions<P> | PageInitFunction<P>): this {
+        if (resovler instanceof Function) this.routeInitMap.set(path, {init: resovler as PageInitFunction<PageWidget>});
+        else this.routeInitMap.set(path, resovler);
         return this;
     }
 
-    switch(path: string, navDir: NavigationDirection) {
+    switch(path: string, navDir: NavigationDirection): PageWidget | undefined {
         const switching = (page: P) => {
+            if (this.currentPage?.path === page.path) return; // prevent same page with diff path
             this.routePageMap.set(path, page);
             this.__process_fn_cache__.forEach(fn => fn(page));
             if (!page.initialized) this._listeners.create.forEach(fn => fn(page));
@@ -54,24 +60,35 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
             return EXISTED_PAGE;
         };
 
-        let fn = this.routeInitMap.get(path)
-        if (!fn) {
-            // check regex route
-            for (const [regex, pageFn] of this.routeInitMap) {
-                if (!(regex instanceof RegExp)) continue;
-                const test = path.match(regex);
-                if (test) {
-                    fn = pageFn;
-                    break
+        // search registered path
+        let pageOptions = this.routeInitMap.get(path)
+        if (!pageOptions) {
+            for (const [pathType, options] of this.routeInitMap) {
+                if (typeof pathType === 'string') continue;
+                if ((pathType instanceof RegExp)) {
+                    // check regex route
+                    const test = path.match(pathType);
+                    if (!test) continue;
+                    pageOptions = options;
+                    break;
                 } else {
-                    continue
+                    // check function route
+                    const resolvedPath = pathType(path);
+                    if (!resolvedPath) continue;
+                    // check page exist
+                    const EXISTED_PAGE = this.routePageMap.get(resolvedPath);
+                    if (EXISTED_PAGE) {
+                        switching(EXISTED_PAGE);
+                        return EXISTED_PAGE;
+                    };
+                    pageOptions = options;
+                    break;
                 }
             }
-            if (!fn) return;
+            if (!pageOptions) return;
         }
-
         // create new page 
-        const page = new this.Page(path, fn);
+        const page = new this.Page(path, {titleStyle: this.titleStyle, ...pageOptions});
         switching(page)
         return page;
     }
@@ -105,6 +122,7 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
             if (oldPage) {
                 oldPage.remove();
             }
+            newPage.setTitle();
             await newPage.init();
             this.insert(newPage);
         }
@@ -114,13 +132,23 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
         }
     }
 
-    private __add__(path: string | RegExp, fn: PageInitFunction<P>) {
-        this.routeInitMap.set(path, fn);
+    setTitle(page: PageWidget) {
+        const PAGE_NAME = page.name();
+        if (PAGE_NAME) {
+            if (this.titleStyle && this.titleStyle.pageName) document.title = this.titleStyle.pageName.replaceAll('$1', `${PAGE_NAME}`);
+        } else {
+            if (this.titleStyle && this.titleStyle.default) document.title = this.titleStyle.default;            
+        }
     }
 }
 
 export interface ViewWidgetOptions<P> extends ParentWidgetOptions {
-    page?: new (...args: any[]) => P
+    page?: new (...args: any[]) => P;
+    titleStyle?: TitleStyle;
+}
+export interface TitleStyle {
+    default: string;
+    pageName?: string;
 }
 
 type ViewWidgetEvents<P extends PageWidget> = {
@@ -129,3 +157,5 @@ type ViewWidgetEvents<P extends PageWidget> = {
 }
 
 export type PageProcessFunction<P extends PageWidget> = (page: P) => void;
+
+type RouteFunction = (path: string) => string | void;
