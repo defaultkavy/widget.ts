@@ -17,36 +17,36 @@ export class InputWidget extends Widget {
     }
 
     placeholder(): string
-    placeholder(text: string): this
-    placeholder(text?: string): this | string {
+    placeholder(text: Optional<string>): this
+    placeholder(text?: Optional<string>): this | string {
         if (!arguments.length) return this.dom.placeholder;
-        if (text === undefined) return this;
+        if (typeof text !== 'string') return this;
         this.dom.placeholder = text;
         return this;
     }
 
     maxLength(): number
-    maxLength(length: number): this
-    maxLength(length?: number) {
+    maxLength(length: Optional<number>): this
+    maxLength(length?: Optional<number>) {
         if (!arguments.length) return this.dom.maxLength;
-        if (length === undefined) return this;
+        if (typeof length !== 'number') return this;
         this.dom.maxLength = length;
         return this
     }
 
     inputMode(): string
-    inputMode(mode: InputMode): this
-    inputMode(mode?: InputMode): this | string {
+    inputMode(mode: Optional<InputMode>): this
+    inputMode(mode?: Optional<InputMode>): this | string {
         if (!arguments.length) return this.dom.inputMode;
-        if (mode === undefined) return this;
+        if (typeof mode !== 'string') return this;
         this.dom.inputMode = mode;
         return this;
     }
 
 
     name(): string
-    name(name: string | undefined): this
-    name(name?: string | undefined): this | string {
+    name(name: Optional<string>): this
+    name(name?: Optional<string>): this | string {
         if (!arguments.length) return this.dom.name;
         if (name === undefined) return this;
         this.dom.name = name;
@@ -65,7 +65,7 @@ export class InputWidget extends Widget {
     value(value: Optional<string>): this;
     value(value?: Optional<string>): this | string {
         if (!arguments.length) return this.dom.value;
-        if (value === undefined) return this;
+        if (typeof value !== 'string') return this;
         this.dom.value = value;
         return this;
     }
@@ -79,10 +79,10 @@ export class InputWidget extends Widget {
     }
 
     multiple(): boolean
-    multiple(enable: boolean): this
-    multiple(enable?: boolean): this | boolean {
+    multiple(enable: Optional<boolean>): this
+    multiple(enable?: Optional<boolean>): this | boolean {
         if (!arguments.length) return this.dom.multiple;
-        if (enable !== undefined) this.dom.multiple = enable;
+        if (typeof enable === 'boolean') this.dom.multiple = enable;
         return this;
     }
 
