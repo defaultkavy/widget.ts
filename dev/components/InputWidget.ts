@@ -94,6 +94,14 @@ export class InputWidget extends Widget {
         return this;
     }
 
+    spellcheck(): boolean
+    spellcheck(enable: Optional<boolean>): this
+    spellcheck(enable?: Optional<boolean>): this | boolean {
+        if (!arguments.length) return this.dom.spellcheck;
+        if (typeof enable === 'boolean') this.dom.spellcheck = enable;
+        return this;
+    }
+
     files(): File[];
     async files(base64: boolean): Promise<string[]>;
     files(base64?: boolean): File[] | Promise<string[]> {
