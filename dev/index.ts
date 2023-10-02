@@ -1,5 +1,5 @@
 import { Widget } from './components/Widget'
-import { ParentWidget } from './components/ParentWidget'
+import { ParentWidget, WidgetContent } from './components/ParentWidget'
 import { ButtonWidget } from './components/ButtonWidget'
 import { DivisionWidget } from './components/DivisionWidget'
 import { FormWidget } from './components/FormWidget'
@@ -11,6 +11,7 @@ import { ListItemWidget } from './components/ListItemWidget'
 import { ListWidget } from './components/ListWidget'
 import { TextWidget } from './components/TextWidget'
 import { WidgetUtil } from './structures/WidgetUtil'
+import { CanvasWidget } from './components/CanvasWidget'
 
 export * from './components/Widget'
 export * from './components/TextWidget'
@@ -25,14 +26,16 @@ export * from './components/ListItemWidget'
 export * from './components/ButtonWidget'
 export * from './components/FormWidget'
 export * from './components/LabelWidget'
+export * from './components/CanvasWidget'
 export * from './extensions/router/Router'
 export * from './extensions/router/PageWidget'
 export * from './extensions/router/ViewWidget'
 export * from './extensions/router/ViewWidget'
 export * from './extensions/input-date/InputDateWidget'
 export * from './extensions/input-textarea/InputTextareaWidget'
+export * from './extensions/keyhandler/KeyHandler'
 export * from './structures/WidgetUtil'
-export * from './structures/FocusManager'
+// export * from './structures/FocusManager'
 
 class WidgetShared {
     linkFunction?: (url: string) => void;
@@ -79,6 +82,7 @@ export function $w(resolver: any) {
             case 'form': return new FormWidget();
             case 'label': return new LabelWidget();
             case 'input': return new InputWidget();
+            case 'canvas': return new CanvasWidget();
         }
         return new ParentWidget({
             tagName: resolver
@@ -88,6 +92,14 @@ export function $w(resolver: any) {
 }
 
 $w.global = WidgetShared;
+$w.dom = dom
+
+function dom(element: Widget | Node): HTMLElement;
+function dom(element: Widget | Node | undefined): HTMLElement | undefined;
+function dom(element: Widget | Node | undefined) {
+    if (element instanceof Widget) return element.dom;
+    else return element;
+}
 
 interface GLOBAL_OPTIONS {
     linkFunction?: (url: string) => void;
@@ -108,13 +120,14 @@ export type WidgetTagNameMap = {
     "em": TextWidget;
     "blockquote": TextWidget;
     "div": DivisionWidget;
-    "ul": ListWidget;
-    "ol": ListWidget;
-    "dl": ListWidget;
-    "li": ListItemWidget;
+    "ul": ListWidget<WidgetContent>;
+    "ol": ListWidget<WidgetContent>;
+    "dl": ListWidget<WidgetContent>;
+    "li": ListItemWidget<WidgetContent>;
     "img": ImageWidget;
     "button": ButtonWidget;
     "form": FormWidget;
     "label": LabelWidget;
     "input": InputWidget;
+    "canvas": CanvasWidget;
 }

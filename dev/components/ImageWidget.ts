@@ -3,6 +3,7 @@ import { Widget, WidgetOptions } from "./Widget";
 export class ImageWidget extends Widget {
     override readonly dom: HTMLImageElement = this.dom;
     anchor: [number, number] = [0.5, 0.5];
+    progress = 0;
     constructor(options?: ImageWidgetBuildOptions) {
         super({...options, tagName: 'img'})
         if (options) this.options(options);
@@ -35,6 +36,26 @@ export class ImageWidget extends Widget {
         if (!arguments.length) return this.dom.loading;
         if (typeof type === 'string') this.dom.loading = type;
         return this;
+    }
+
+    async load(url: string, onprogress?: (e: ProgressEvent, widget: this) => void) {
+        return new Promise<this>(resolve => {
+            const xmlHTTP = new XMLHttpRequest();
+            xmlHTTP.open('GET', url, true);
+            xmlHTTP.responseType = 'arraybuffer';
+            xmlHTTP.onload = () => {
+                this.src(url);
+                resolve(this);
+            };
+            xmlHTTP.onprogress = (e) => {
+                this.progress = (e.loaded / e.total) * 100;
+                if (onprogress) onprogress(e, this);
+            };
+            xmlHTTP.onloadstart = () => {
+                this.progress = 0;
+            };
+            xmlHTTP.send();
+        })
     }
 
     set asset(asset: ImageAssetOptions) {

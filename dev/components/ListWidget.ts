@@ -1,8 +1,9 @@
+import { Widget } from "../index";
 import { WidgetManager } from "../structures/WidgetManager";
 import { ListItemWidget } from "./ListItemWidget";
 import { Complex, Multable, Optional, ParentWidget, ParentWidgetOptions, WidgetContent } from "./ParentWidget";
 
-export class ListWidget<C extends WidgetContent = WidgetContent> extends ParentWidget {
+export class ListWidget<C extends WidgetContent> extends ParentWidget {
     constructor(type: keyof ListWidgetTypeMap, options?: ListWidgetBuildOptions) {
         super({
             ...options,
@@ -70,7 +71,7 @@ export interface ListWidgetOptions extends ParentWidgetOptions {
 }
 
 export interface ListWidgetTypeMap {
-    'ol': ListWidget;
-    'ul': ListWidget;
-    'dl': ListWidget;
+    'ol': ListWidget<WidgetContent>;
+    'ul': ListWidget<WidgetContent>;
+    'dl': ListWidget<WidgetContent>;
 }

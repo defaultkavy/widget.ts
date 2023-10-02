@@ -10,7 +10,7 @@ const CHILD_OBSERVER = new MutationObserver(p1 => {
             const IS_TEXT = node instanceof Text;
             const widget = node.parentElement?.$widget
             const PARENT_IS_WIDGET = widget instanceof ParentWidget;
-            if (IS_TEXT && PARENT_IS_WIDGET && widget.children.has(node))
+            if (IS_TEXT && PARENT_IS_WIDGET && widget.children.inCache(node))
             widget.children.insertToCache(node, key);
         })
     })

@@ -44,9 +44,10 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
     }
 
     switch(path: string, navDir: NavigationDirection): PageWidget | undefined {
+        let path_resolver = path;
         const switching = (page: P) => {
             if (this.currentPage?.path === page.path) return; // prevent same page with diff path
-            this.routePageMap.set(path, page);
+            this.routePageMap.set(path_resolver, page);
             this.__process_fn_cache__.forEach(fn => fn(page));
             if (!page.initialized) this._listeners.create.forEach(fn => fn(page));
             this.transition(this.currentPage, page, navDir);
@@ -81,6 +82,7 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
                         switching(EXISTED_PAGE);
                         return EXISTED_PAGE;
                     };
+                    path_resolver = resolvedPath;
                     pageOptions = options;
                     break;
                 }

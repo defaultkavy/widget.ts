@@ -3,13 +3,15 @@ import { ImageWidget } from "../components/ImageWidget";
 import { LinkWidget } from "../components/LinkWidget";
 import { ListItemWidget } from "../components/ListItemWidget";
 import { ListWidget } from "../components/ListWidget";
-import { ParentWidget } from "../components/ParentWidget";
+import { Multable, ParentWidget } from "../components/ParentWidget";
 import { TextWidget } from "../components/TextWidget";
 import { Widget } from "../components/Widget";
 import { WidgetTagNameMap } from "../index";
 
 export class WidgetUtil {
     static widgetify = widgetify;
+    static resolveMultable = resolveMultable;
+    static autobind = autoBind;
 }
 
 export function widgetify(element: HTMLElement, options?: WidgetifyOptions) {
@@ -90,4 +92,19 @@ export interface WidgetifyOptions {
             renderer: (widget: ParentWidget, referElement: HTMLElement) => void;
         };
     };
+}
+
+function resolveMultable<T>(resolver: Multable<T>) {
+    if (!(resolver instanceof Array)) resolver = [resolver];
+    return resolver;
+}
+
+function autoBind<T extends Object>(self: T) {
+    for (const _name of Object.getOwnPropertyNames(self.constructor.prototype)) {
+        const prop = _name as keyof typeof self;
+        const value = self[prop];
+        if (value instanceof Function) {
+            self[prop] = value.bind(self)
+        }
+    }
 }

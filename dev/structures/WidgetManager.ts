@@ -1,6 +1,7 @@
 import { WidgetContent, ParentWidget } from "../components/ParentWidget";
 import { Widget } from "../components/Widget";
 import { Mutable } from "../global";
+import { $w } from "../index";
 
 /**
  * Multiple of {@link Widget}, {@link HTMLElement}, {@link Text} manager.
@@ -87,7 +88,8 @@ export class WidgetManager<T extends WidgetContent = WidgetContent> {
      * @param widgetScope - deep check every widget's nodeElement
      * @returns boolean
      */
-    has(node: T, widgetScope: boolean = false): boolean {
+    inCache(node: T | undefined, widgetScope: boolean = false): boolean {
+        if (node === undefined) return false;
         // check every nodeElement inside widget
         if (widgetScope) {
             for (const content of this.cache.values()) {
@@ -104,20 +106,7 @@ export class WidgetManager<T extends WidgetContent = WidgetContent> {
 
     include(node: T | undefined) {
         if (node === undefined) return false;
-        const findNode: (n: Node) => boolean = (n) => {
-            for (const childNode of Array.from(n.childNodes)) {
-                if (childNode === node) return true;
-                else if (findNode(childNode)) return true;
-            }
-            return false;
-        }
-        
-        if (node instanceof Node) return findNode(this.widget.dom);
-        else for (const child of this.cache.values()) {
-            if (node === child) return true;
-            if (child instanceof ParentWidget) if (child.children.include(node)) return true;
-            else if (child instanceof HTMLElement) return findNode(child);
-        }
+        return this.widget.dom.contains($w.dom(node))
     }
 
     build() {
@@ -170,13 +159,13 @@ export class WidgetManager<T extends WidgetContent = WidgetContent> {
     //     })
     // }
 
-    find(resolver: string): Widget | HTMLElement {
+    find(resolver: string): Widget | HTMLElement | null {
         const ele = this.widget.dom.querySelector(resolver);
         if (ele instanceof HTMLElement) {
             if (ele.$widget instanceof Widget) return ele.$widget;
             else return ele
         }
-        else return ele as HTMLElement
+        else return ele as HTMLElement | null;
     }
 
     findAll(resolver: string): (Widget | HTMLElement)[] {

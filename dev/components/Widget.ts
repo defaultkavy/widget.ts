@@ -1,5 +1,5 @@
 import { Mutable } from "../global";
-import { WidgetTagNameMap, __widget_shared__ } from "../index";
+import { $w, WidgetTagNameMap, WidgetUtil, __widget_shared__ } from "../index";
 import { ParentWidget } from "./ParentWidget";
 
 export class Widget {
@@ -14,6 +14,7 @@ export class Widget {
         this.id(options.id);
         this.dom.$widget = this;
         if (options.class) this.class(...options.class);
+        // WidgetUtil.autobind(this);
     }
 
     id(): string;
@@ -30,6 +31,18 @@ export class Widget {
     class(...token: (string | undefined)[]): this | DOMTokenList {
         if (!token.length) return this.dom.classList;
         this.dom.classList.add(...(token.map(t => t ?? '')));
+        return this;
+    }
+
+    dataset(): DOMStringMap;
+    dataset(key: string): string | undefined;
+    dataset(key: string, value: string | undefined): this;
+    dataset(key?: string, value?: string | undefined) {
+        if (arguments.length === 0) return this.dom.dataset;
+        if (key) {
+            if (arguments.length === 1) return this.dom.dataset[key];
+            this.dom.dataset[key] = value;
+        }
         return this;
     }
 
@@ -64,6 +77,22 @@ export class Widget {
         return this;
     }
 
+    animate(keyframes: Keyframe[] | PropertyIndexedKeyframes | null, options?: number | AnimationOptions): Animation {
+        const animation = this.dom.animate(keyframes, options);
+        if (typeof options !== "number") {
+            if (options?.commitOnfinish) {
+                animation.addEventListener('finish', (e) => {
+                    animation.commitStyles();
+                    animation.cancel();
+                })
+            }
+            if (options?.finish) animation.addEventListener('finish', (e) => options.finish!(animation, e));
+            if (options?.cancel) animation.addEventListener('cancel', (e) => options.cancel!(animation, e));
+            if (options?.remove) animation.addEventListener('remove', (e) => options.remove!(animation, e));
+        }
+        return animation;
+    }
+
     /**
      * **Remove this widget**.
      * @returns {this}
@@ -71,7 +100,7 @@ export class Widget {
     remove(): this {
         if (this.parent) {
             // Check parent widget children is not include this widget.
-            if (this.parent.children.has(this)) this.parent.children.delete(this);
+            if (this.parent.children.inCache(this)) this.parent.children.delete(this);
         }
         this.dom.remove();
         this.__event__('__onRemove__');
@@ -143,15 +172,13 @@ export class Widget {
     }
 
     isRendered() {
-        const findDoc: (ele: HTMLElement) => boolean = (ele: HTMLElement) => {
-            if (ele.parentElement === document.body) return true;
-            else {
-                if (ele.parentElement) return findDoc(ele.parentElement);
-                return false;
-            }
-        }
+        return Widget.isRendered(this.dom);
+    }
 
-        return findDoc(this.dom);
+    static isRendered(ele: Widget | Node | undefined): boolean | undefined {
+        if (!ele) return undefined;
+        ele = $w.dom(ele);
+        return document.body.contains(ele)
     }
 
     onRemove(callback: (widget: this) => void) {
@@ -165,6 +192,28 @@ export class Widget {
 
     preventDefault() {
         return this;
+    }
+
+    rect(relative?: Widget): DOMRect {
+        if (!relative) return this.dom.getBoundingClientRect();
+        else {
+            const dom_rect = this.dom.getBoundingClientRect();
+            const re_rect = relative.dom.getBoundingClientRect();
+            const domRect = {
+                left: dom_rect.left - re_rect.left,
+                top: dom_rect.top - re_rect.top,
+                bottom: dom_rect.bottom - re_rect.bottom,
+                right: dom_rect.right - re_rect.right,
+                x: dom_rect.x - re_rect.x,
+                y: dom_rect.y - re_rect.y,
+                height: re_rect.height,
+                width: re_rect.width,
+            }
+            return {
+                ...domRect,
+                toJSON: () => domRect
+            }
+        }
     }
 }
 
@@ -191,3 +240,13 @@ export type Arguments = {
     [key: string]: any[]
 }
 export type EventFunction<T extends Arguments, K extends keyof T> = (...args: T[K]) => void;
+
+export interface AnimationOptions extends KeyframeAnimationOptions {
+    finish?: (animation: Animation, event: AnimationPlaybackEvent) => void;
+    cancel?: (animation: Animation, event: AnimationPlaybackEvent) => void;
+    remove?: (animation: Animation, event: Event) => void;
+    /**
+     * Auto commit forward or backward style and cancel animation when finish. Default value is false
+     */
+    commitOnfinish?: boolean;
+}

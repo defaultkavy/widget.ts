@@ -1,7 +1,7 @@
 import { WidgetManager } from "../structures/WidgetManager";
 import { ParentWidget, ParentWidgetOptions, WidgetContent } from "./ParentWidget";
 
-export class ListItemWidget<C extends WidgetContent = WidgetContent> extends ParentWidget {
+export class ListItemWidget<C extends WidgetContent> extends ParentWidget {
     constructor(options?: ListItemWidgetBuildOptions) {
         super({...options, tagName: 'li'})
         if (options) {
