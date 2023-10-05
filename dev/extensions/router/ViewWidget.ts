@@ -122,10 +122,12 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
         (<Mutable<P>>newPage).opened = true;
         if (!this.__transition_handler__) {
             if (oldPage) {
+                oldPage._close();
                 oldPage.remove();
             }
             newPage.setTitle();
             await newPage.init();
+            newPage._open();
             this.insert(newPage);
         }
         else {

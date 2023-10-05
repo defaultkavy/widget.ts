@@ -7,6 +7,14 @@ export class InputWidget extends Widget {
         super({...options, tagName: 'input'})
     }
 
+    disable(): boolean;
+    disable(boolean: boolean): this;
+    disable(boolean?: boolean) {
+        if (!arguments.length) return this.dom.disabled;
+        if (typeof boolean === 'boolean') this.dom.disabled = boolean;
+        return this;
+    }
+
     type(): string
     type(type?: keyof InputWidgetTypes): this
     type(type?: keyof InputWidgetTypes) {
@@ -86,11 +94,11 @@ export class InputWidget extends Widget {
         return this;
     }
 
-    autocomplete(): boolean ;
-    autocomplete(enable: Optional<boolean>): this;
-    autocomplete(enable?: Optional<boolean>): this | boolean {
-        if (!arguments.length) return this.dom.autocomplete === 'on' ? true : false;
-        if (typeof enable === 'boolean') this.dom.autocomplete = enable ? 'on' : 'off';
+    autocomplete(): AutoFill ;
+    autocomplete(type: Optional<AutoFill>): this;
+    autocomplete(type?: Optional<AutoFill>) {
+        if (!arguments.length) return this.dom.autocomplete;
+        if (typeof type === 'string') this.dom.autocomplete = type;
         return this;
     }
 
@@ -130,11 +138,11 @@ export interface InputWidgetBuildOptions extends WidgetOptions {
 
 }
 
-type InputMode = 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
+export type InputMode = 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
 
-type InputFileFilterTypes = 'audio/*' | 'video/*' | 'image/*';
+export type InputFileFilterTypes = 'audio/*' | 'video/*' | 'image/*';
 
-type InputFileAcceptTypes = InputFileFilterTypes | string;
+export type InputFileAcceptTypes = InputFileFilterTypes | string;
 
 export interface InputWidgetTypes {
     "text": InputWidget;

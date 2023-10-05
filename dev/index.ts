@@ -12,6 +12,7 @@ import { ListWidget } from './components/ListWidget'
 import { TextWidget } from './components/TextWidget'
 import { WidgetUtil } from './structures/WidgetUtil'
 import { CanvasWidget } from './components/CanvasWidget'
+import { SVGWidget } from './components/SVGWidget'
 
 export * from './components/Widget'
 export * from './components/TextWidget'
@@ -27,6 +28,7 @@ export * from './components/ButtonWidget'
 export * from './components/FormWidget'
 export * from './components/LabelWidget'
 export * from './components/CanvasWidget'
+export * from './components/SVGWidget'
 export * from './extensions/router/Router'
 export * from './extensions/router/PageWidget'
 export * from './extensions/router/ViewWidget'
@@ -83,6 +85,7 @@ export function $w(resolver: any) {
             case 'label': return new LabelWidget();
             case 'input': return new InputWidget();
             case 'canvas': return new CanvasWidget();
+            case 'svg': return new SVGWidget();
         }
         return new ParentWidget({
             tagName: resolver
@@ -130,4 +133,5 @@ export type WidgetTagNameMap = {
     "label": LabelWidget;
     "input": InputWidget;
     "canvas": CanvasWidget;
+    "svg": SVGWidget;
 }

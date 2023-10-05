@@ -7,6 +7,7 @@ export class Router {
     pageIndex = 0;
     private notFoundFn?: PageInitFunction<PageWidget>;
     private _onhash = new Set<(prevHash: string | undefined, nextHash: string | undefined) => void>
+    private _onpath = new Set<(prevPath: string | undefined, nextPath: string) => void>
     prevURL?: string;
     constructor() {
     }
@@ -73,7 +74,6 @@ export class Router {
     }
 
     private pathChange(navDir: NavigationDirection) {
-        this.prevURL = location.href;
         const paths = location.pathname.split('/')
         if (paths.at(-1) === '') paths.pop(); // remove last empty path
         
@@ -82,7 +82,9 @@ export class Router {
             if (+part <= 1) continue;
             paths[part] = paths[+part - 1] + paths[part]
         }
-
+        const prevURL = this.prevURL ? new URL(this.prevURL) : undefined;
+        this._onpath.forEach(fn => fn(prevURL?.pathname, location.pathname))
+        this.prevURL = location.href;
         let found = false;
         for (const i in paths) {
             const view = this.views.get(paths[i]);
@@ -119,6 +121,11 @@ export class Router {
 
     onhash(fn: (prevHash: string | undefined, nextHash: string | undefined) => void) {
         this._onhash.add(fn);
+        return this;
+    }
+
+    onpath(fn: (prevPath: string | undefined, nextPath: string) => void) {
+        this._onpath.add(fn);
         return this;
     }
 

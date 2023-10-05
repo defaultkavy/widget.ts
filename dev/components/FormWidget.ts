@@ -22,11 +22,11 @@ export class FormWidget extends ParentWidget {
         return this;
     }
 
-    autocomplete(): boolean ;
-    autocomplete(enable: Optional<boolean>): this;
-    autocomplete(enable?: Optional<boolean>): this | boolean {
-        if (!arguments.length) return this.dom.autocomplete === 'on' ? true : false;
-        if (typeof enable === 'boolean') this.dom.autocomplete = enable ? 'on' : 'off';
+    autocomplete(): AutoFillBase ;
+    autocomplete(type: Optional<AutoFillBase>): this;
+    autocomplete(type?: Optional<AutoFillBase>) {
+        if (!arguments.length) return this.dom.autocomplete;
+        if (typeof type === 'string') this.dom.autocomplete = type;
         return this;
     }
 }

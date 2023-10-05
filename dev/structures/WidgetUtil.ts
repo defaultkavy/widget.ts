@@ -4,6 +4,7 @@ import { LinkWidget } from "../components/LinkWidget";
 import { ListItemWidget } from "../components/ListItemWidget";
 import { ListWidget } from "../components/ListWidget";
 import { Multable, ParentWidget } from "../components/ParentWidget";
+import { SVGWidget } from "../components/SVGWidget";
 import { TextWidget } from "../components/TextWidget";
 import { Widget } from "../components/Widget";
 import { WidgetTagNameMap } from "../index";
@@ -12,6 +13,9 @@ export class WidgetUtil {
     static widgetify = widgetify;
     static resolveMultable = resolveMultable;
     static autobind = autoBind;
+    static rem(multiply: number) {
+        return multiply * parseFloat(getComputedStyle(document.documentElement).fontSize)
+    }
 }
 
 export function widgetify(element: HTMLElement, options?: WidgetifyOptions) {
