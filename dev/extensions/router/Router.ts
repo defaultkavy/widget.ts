@@ -86,6 +86,7 @@ export class Router {
         this._onpath.forEach(fn => fn(prevURL?.pathname, location.pathname))
         this.prevURL = location.href;
         let found = false;
+        console.debug(paths)
         for (const i in paths) {
             const view = this.views.get(paths[i]);
             if (!view) break;
