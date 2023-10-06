@@ -76,7 +76,6 @@ export class Router {
     private pathChange(navDir: NavigationDirection) {
         const paths = location.pathname.split('/')
         if (paths.at(-1) === '') paths.pop(); // remove last empty path
-        
         for (const part in paths) {
             paths[part] = `/${paths[part]}`
             if (+part <= 1) continue;
@@ -86,20 +85,24 @@ export class Router {
         this._onpath.forEach(fn => fn(prevURL?.pathname, location.pathname))
         this.prevURL = location.href;
         let found = false;
-        console.debug(paths)
         for (const i in paths) {
+            // find view with every full path
             const view = this.views.get(paths[i]);
-            if (!view) break;
+            if (!view) continue;
             this.currentView = view;
-            // Test route longest path
-            const fullUrl = view.switch(location.pathname.replace(paths[i], '/').replace('//', '/'), navDir)
-            if (fullUrl) return // found page
-            // get second view
-            const page = view.switch(paths[+i + 1], navDir)
-            if (!page) break;
-            else if (page && paths.length === +i + 1) return // found page
+            getPage(view, +i)
         }
         if (!found) this.onNotFound();
+
+        function getPage(view: ViewWidget, pathIndex: number) {
+            for (let i = pathIndex; i < paths.length; i ++) {
+                const pagePath = paths[i].replace(view.path, '/').replace('//', '/')
+                if (pagePath === '/' && paths[i + 1]) continue; 
+                // Test route longest path
+                const page = view.switch(pagePath, navDir);
+                if (page) found = true
+            }
+        }
     }
 
     private hashChange() {
