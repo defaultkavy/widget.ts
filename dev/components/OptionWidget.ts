@@ -1,8 +1,7 @@
 import { WidgetUtil } from "../structures/WidgetUtil";
 import { ParentWidget, ParentWidgetConfig } from "./ParentWidget";
 
-export class OptionWidget extends ParentWidget {
-    readonly dom = super.dom as HTMLOptionElement;
+export class OptionWidget extends ParentWidget<HTMLOptionElement> {
     constructor(config?: OptionWidgetConfig) {
         super({tagName: 'option'})
         this.config(config);

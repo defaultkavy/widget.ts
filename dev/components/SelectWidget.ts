@@ -3,8 +3,7 @@ import { OptionGroupWidget, OptionGroupWidgetConfig } from "./OptionGroupWidget"
 import { OptionWidget, OptionWidgetConfig } from "./OptionWidget";
 import { ParentWidget } from "./ParentWidget";
 
-export class SelectWidget extends ParentWidget {
-    readonly dom = super.dom as HTMLSelectElement;
+export class SelectWidget extends ParentWidget<HTMLSelectElement> {
     constructor() {
         super({tagName: 'select'})
     }

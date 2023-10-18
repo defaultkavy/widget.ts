@@ -1,7 +1,6 @@
 import { ParentWidget, ParentWidgetConfig } from "./ParentWidget";
 
-export class LabelWidget extends ParentWidget {
-    readonly dom = super.dom as HTMLLabelElement;
+export class LabelWidget extends ParentWidget<HTMLLabelElement> {
     constructor(options?: LabelWidgetBuildOptions) {
         super({...options, tagName: 'label'})
     }

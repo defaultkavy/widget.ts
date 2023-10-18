@@ -1,7 +1,6 @@
 import { ParentWidget, ParentWidgetConfig } from "./ParentWidget";
 
-export class ButtonWidget extends ParentWidget {
-    readonly dom = super.dom as HTMLButtonElement;
+export class ButtonWidget extends ParentWidget<HTMLButtonElement> {
     constructor(options?: ButtonWidgetBuildOptions) {
         super({...options, tagName: 'button'})
     }

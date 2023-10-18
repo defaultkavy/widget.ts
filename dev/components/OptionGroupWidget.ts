@@ -2,8 +2,7 @@ import { WidgetUtil } from "../structures/WidgetUtil";
 import { OptionWidgetConfig, OptionWidget } from "./OptionWidget";
 import { ParentWidget, ParentWidgetConfig } from "./ParentWidget";
 
-export class OptionGroupWidget extends ParentWidget {
-    readonly dom = super.dom as HTMLOptGroupElement;
+export class OptionGroupWidget extends ParentWidget<HTMLOptionElement> {
     constructor(config?: OptionGroupWidgetConfig) {
         super({tagName: 'optgroup'})
         this.config(config);

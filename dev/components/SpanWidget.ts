@@ -1,7 +1,6 @@
 import { ParentWidget, ParentWidgetConfig } from "./ParentWidget";
 
-export class SpanWidget extends ParentWidget {
-    readonly dom = super.dom as HTMLSpanElement;
+export class SpanWidget extends ParentWidget<HTMLSpanElement> {
     constructor(config?: SpanWidgetConfig) {
         super({...config, tagName: 'span'})
     }

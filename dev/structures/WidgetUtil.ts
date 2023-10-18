@@ -54,7 +54,7 @@ export class WidgetUtil {
         }).bind(instance) as FluentMethod<I, T>;
         const fluentObj = {
             fn: fn,
-            overload: fn
+            overload: () => fn
         } as Fluent<I, T>;
         return fluentObj;
     }
@@ -133,8 +133,8 @@ export interface WidgetifyOptions {
         [key in keyof WidgetTagNameMap]?: (widget: WidgetTagNameMap[key]) => void;
     } | {
         [key in string]?: {
-            widget: (referElement: HTMLElement) => ThisType<ParentWidget>;
-            renderer: (widget: ParentWidget, referElement: HTMLElement) => void;
+            widget: <H extends HTMLElement>(referElement: H) => ThisType<ParentWidget<H>>;
+            renderer: <H extends HTMLElement>(widget: ParentWidget<H>, referElement: H) => void;
         };
     };
 }

@@ -1,10 +1,9 @@
 import { ParentWidget, ParentWidgetConfig } from "../../components/ParentWidget";
-import { Mutable } from "../../global";
 import { EventFunction } from "../../index";
 import { PageWidget, PageInitFunction, PageWidgetOptions } from "./PageWidget";
 import { NavigationDirection, $r } from "./Router";
 
-export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget {
+export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget<HTMLElement> {
     constructor(path: string, options?: ViewWidgetOptions<P>) {
         super({
             ...options,

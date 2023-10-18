@@ -1,15 +1,15 @@
 import { $w, WidgetTagNameMap, WidgetUtil, __widget_shared__ } from "../index";
 import { ParentWidget } from "./ParentWidget";
 
-export class Widget {
-    readonly dom: HTMLElement;
-    readonly parent?: ParentWidget;
+export class Widget<H extends HTMLElement = HTMLElement> {
+    readonly dom: H;
+    readonly parent?: ParentWidget<HTMLElement>;
     readonly focusable: boolean = false;
     private readonly __onRemove__: Set<(widget: Widget) => void> = new Set;
     private __listeners__: Map<Function, Function> = new Map;
     readonly hidden: boolean = false;
     constructor(config: WidgetBuildConfig) {
-        this.dom = document.createElement(config.tagName);
+        this.dom = document.createElement(config.tagName) as H;
         this.id(config.id);
         this.dom.$widget = this;
         if (config.class) this.class(...config.class);

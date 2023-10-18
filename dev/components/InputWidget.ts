@@ -1,8 +1,7 @@
 import { WidgetUtil } from "../structures/WidgetUtil";
 import { Widget, WidgetConfig } from "./Widget";
 
-export class InputWidget extends Widget {
-    readonly dom = super.dom as HTMLInputElement;
+export class InputWidget extends Widget<HTMLInputElement> {
     constructor(options?: InputWidgetConfig) {
         super({...options, tagName: 'input'})
     }

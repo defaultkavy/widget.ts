@@ -1,7 +1,6 @@
 import { Widget, WidgetConfig } from "./Widget";
 
-export class ImageWidget extends Widget {
-    readonly dom = super.dom as HTMLImageElement;
+export class ImageWidget extends Widget<HTMLImageElement> {
     progress = 0;
     constructor(options?: ImageWidgetBuildOptions) {
         super({...options, tagName: 'img'})

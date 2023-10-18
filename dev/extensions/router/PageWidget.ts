@@ -1,7 +1,7 @@
 import { ParentWidget, ParentWidgetConfig } from "../../components/ParentWidget";
 import { TitleStyle } from "./ViewWidget";
 
-export class PageWidget extends ParentWidget {
+export class PageWidget extends ParentWidget<HTMLElement> {
     constructor(path: string, options: PageWidgetOptions<PageWidget>) {
         super({tagName: 'page', ...options})
         this.path = path;

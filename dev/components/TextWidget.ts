@@ -6,8 +6,7 @@ import { Content, ParentWidget, ParentWidgetConfig, WidgetContent } from "./Pare
  * @param options - {@link TextWidgetBuildOptions}.
  * @class
  */
-export class TextWidget extends ParentWidget {
-    override readonly dom = super.dom as HTMLParagraphElement | HTMLHeadingElement | HTMLElement;
+export class TextWidget extends ParentWidget<HTMLParagraphElement | HTMLHeadingElement | HTMLElement> {
     readonly type: keyof TextWidgetTypeMap;
     constructor(type: keyof TextWidgetTypeMap, options?: TextWidgetBuildOptions) {
         super({

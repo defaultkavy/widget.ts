@@ -14,13 +14,11 @@ const CHILD_OBSERVER = new MutationObserver(p1 => {
         })
     })
 })
-export class ParentWidget extends Widget {
-    readonly dom: HTMLElement = super.dom;
-    readonly children = new WidgetManager(this);
+export class ParentWidget<H extends HTMLElement = any> extends Widget<H> {
+    readonly children = new WidgetManager<WidgetContent, this>(this);
     constructor(options: ParentWidgetBuildConfig) {
         super({...options, tagName: options.tagName})
         CHILD_OBSERVER.observe(this.dom, {childList: true})
-        this.editable('plaintext-only')
     }
 
     config(options: ParentWidgetConfig): this {
@@ -103,7 +101,7 @@ export type Content = BaseContent | WidgetContent | undefined;
 /**
  * Extension Widget for custom input type
  */
-export abstract class ExtensionInputWidget extends ParentWidget {
+export abstract class ExtensionInputWidget extends ParentWidget<HTMLElement> {
     protected readonly hidden_input = $w('input').type('hidden');
     constructor(options: ExtensionInputWidgetBuildOptions) {
         super({...options})

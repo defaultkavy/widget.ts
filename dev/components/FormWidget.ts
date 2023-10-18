@@ -1,7 +1,6 @@
 import { ParentWidget, ParentWidgetConfig } from "./ParentWidget";
 
-export class FormWidget extends ParentWidget {
-    readonly dom = super.dom as HTMLFormElement;
+export class FormWidget extends ParentWidget<HTMLFormElement> {
     constructor(options?: FormWidgetBuildOptions) {
         super({...options, tagName: 'form'})
     }

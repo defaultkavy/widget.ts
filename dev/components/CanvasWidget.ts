@@ -1,7 +1,6 @@
 import { Widget, WidgetConfig } from "./Widget";
 
-export class CanvasWidget extends Widget {
-    readonly dom = super.dom as HTMLCanvasElement;
+export class CanvasWidget extends Widget<HTMLCanvasElement> {
     constructor(options?: CanvasWidgetBuildOptions) {
         super({...options, tagName: 'canvas'})
     }

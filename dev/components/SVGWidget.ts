@@ -1,7 +1,6 @@
 import { Widget } from "../index";
 
-export class SVGWidget extends Widget {
-    readonly dom = super.dom as HTMLElement & SVGSVGElement;
+export class SVGWidget extends Widget<HTMLElement & SVGSVGElement> {
     constructor() {
         super({tagName: 'svg'})
     }

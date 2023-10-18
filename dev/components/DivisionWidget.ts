@@ -6,8 +6,7 @@ import { ParentWidget, ParentWidgetConfig } from "./ParentWidget";
  * @param options - {@link DivisionWidgetBuildOptions}.
  * @extends ParentWidget
  */
-export class DivisionWidget extends ParentWidget {
-    readonly dom = super.dom as HTMLDivElement;
+export class DivisionWidget extends ParentWidget<HTMLDivElement> {
     constructor(options?: DivisionWidgetBuildOptions) {
         super({...options, tagName: 'div'})
     }

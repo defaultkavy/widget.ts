@@ -2,14 +2,13 @@ import { ParentWidget, ParentWidgetConfig, Widget, WidgetContent } from "../inde
 import { WidgetManager } from "../structures/WidgetManager";
 import { ListItemWidget } from "./ListItemWidget";
 
-export class ListWidget<C extends WidgetContent> extends ParentWidget {
+export class ListWidget<C extends WidgetContent> extends ParentWidget<HTMLUListElement | HTMLOListElement | HTMLDListElement> {
     constructor(type: keyof ListWidgetTypeMap, options?: ListWidgetBuildOptions) {
         super({
             ...options,
             tagName: type
         })
     }
-    readonly dom = super.dom as HTMLUListElement | HTMLOListElement | HTMLDListElement;
     items = new WidgetManager<ListItemWidget<C>, this>(this);
     itemMap = new Map<C, ListItemWidget<C>>;
 
