@@ -1,4 +1,4 @@
-import { Content, ParentWidget, ParentWidgetOptions, WidgetContent } from "./ParentWidget";
+import { Content, ParentWidget, ParentWidgetConfig, WidgetContent } from "./ParentWidget";
 
 /**
  * ### Text Element Builder
@@ -7,7 +7,7 @@ import { Content, ParentWidget, ParentWidgetOptions, WidgetContent } from "./Par
  * @class
  */
 export class TextWidget extends ParentWidget {
-    override readonly dom: HTMLParagraphElement | HTMLHeadingElement | HTMLElement = this.dom;
+    override readonly dom = super.dom as HTMLParagraphElement | HTMLHeadingElement | HTMLElement;
     readonly type: keyof TextWidgetTypeMap;
     constructor(type: keyof TextWidgetTypeMap, options?: TextWidgetBuildOptions) {
         super({
@@ -26,7 +26,7 @@ export class TextWidget extends ParentWidget {
 export interface TextWidgetBuildOptions extends TextWidgetOptions {
 }
 
-export interface TextWidgetOptions extends ParentWidgetOptions {}
+export interface TextWidgetOptions extends ParentWidgetConfig {}
 
 interface TextWidgetBuilderOptions extends Omit<TextWidgetBuildOptions, 'type'> {}
 

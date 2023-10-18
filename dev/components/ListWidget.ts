@@ -1,7 +1,6 @@
-import { Widget } from "../index";
+import { ParentWidget, ParentWidgetConfig, Widget, WidgetContent } from "../index";
 import { WidgetManager } from "../structures/WidgetManager";
 import { ListItemWidget } from "./ListItemWidget";
-import { Complex, Multable, Optional, ParentWidget, ParentWidgetOptions, WidgetContent } from "./ParentWidget";
 
 export class ListWidget<C extends WidgetContent> extends ParentWidget {
     constructor(type: keyof ListWidgetTypeMap, options?: ListWidgetBuildOptions) {
@@ -10,8 +9,8 @@ export class ListWidget<C extends WidgetContent> extends ParentWidget {
             tagName: type
         })
     }
-    override readonly dom: HTMLUListElement | HTMLOListElement | HTMLDListElement = this.dom;
-    items = new WidgetManager<ListItemWidget<C>>(this);
+    readonly dom = super.dom as HTMLUListElement | HTMLOListElement | HTMLDListElement;
+    items = new WidgetManager<ListItemWidget<C>, this>(this);
     itemMap = new Map<C, ListItemWidget<C>>;
 
     item(item: Multable<Optional<Complex<C>>>, position?: number) {
@@ -67,7 +66,7 @@ export class ListWidget<C extends WidgetContent> extends ParentWidget {
 export interface ListWidgetBuildOptions extends ListWidgetOptions {
 }
 
-export interface ListWidgetOptions extends ParentWidgetOptions {
+export interface ListWidgetOptions extends ParentWidgetConfig {
 }
 
 export interface ListWidgetTypeMap {

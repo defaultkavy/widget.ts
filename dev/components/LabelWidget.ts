@@ -1,7 +1,7 @@
-import { ParentWidget, ParentWidgetOptions } from "./ParentWidget";
+import { ParentWidget, ParentWidgetConfig } from "./ParentWidget";
 
 export class LabelWidget extends ParentWidget {
-    override readonly dom: HTMLLabelElement = this.dom;
+    readonly dom = super.dom as HTMLLabelElement;
     constructor(options?: LabelWidgetBuildOptions) {
         super({...options, tagName: 'label'})
     }
@@ -15,4 +15,4 @@ export class LabelWidget extends ParentWidget {
     }
 }
 
-export interface LabelWidgetBuildOptions extends ParentWidgetOptions {}
+export interface LabelWidgetBuildOptions extends ParentWidgetConfig {}

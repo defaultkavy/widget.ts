@@ -1,7 +1,7 @@
-import { Optional, ParentWidget, ParentWidgetOptions } from "./ParentWidget";
+import { ParentWidget, ParentWidgetConfig } from "./ParentWidget";
 
 export class FormWidget extends ParentWidget {
-    override readonly dom: HTMLFormElement = this.dom;
+    readonly dom = super.dom as HTMLFormElement;
     constructor(options?: FormWidgetBuildOptions) {
         super({...options, tagName: 'form'})
     }
@@ -16,8 +16,8 @@ export class FormWidget extends ParentWidget {
         return this;
     }
 
-    options(options: FormWidgetBuildOptions) {
-        super.options(options);
+    config(options: FormWidgetBuildOptions) {
+        super.config(options);
         if (options.action) this.action(options.action);
         return this;
     }
@@ -31,6 +31,6 @@ export class FormWidget extends ParentWidget {
     }
 }
 
-export interface FormWidgetBuildOptions extends ParentWidgetOptions {
+export interface FormWidgetBuildOptions extends ParentWidgetConfig {
     action?: string;
 }

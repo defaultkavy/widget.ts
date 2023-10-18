@@ -1,11 +1,11 @@
-import { Widget, WidgetOptions } from "./Widget";
+import { Widget, WidgetConfig } from "./Widget";
 
 export class CanvasWidget extends Widget {
-    override readonly dom: HTMLCanvasElement = this.dom;
+    readonly dom = super.dom as HTMLCanvasElement;
     constructor(options?: CanvasWidgetBuildOptions) {
         super({...options, tagName: 'canvas'})
     }
 }
 
-export interface CanvasWidgetBuildOptions extends WidgetOptions {
+export interface CanvasWidgetBuildOptions extends WidgetConfig {
 }

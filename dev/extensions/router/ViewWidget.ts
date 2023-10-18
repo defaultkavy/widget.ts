@@ -1,4 +1,4 @@
-import { ParentWidget, ParentWidgetOptions } from "../../components/ParentWidget";
+import { ParentWidget, ParentWidgetConfig } from "../../components/ParentWidget";
 import { Mutable } from "../../global";
 import { EventFunction } from "../../index";
 import { PageWidget, PageInitFunction, PageWidgetOptions } from "./PageWidget";
@@ -11,7 +11,7 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
             tagName: 'view'
         });
         this.path = path;
-        this.options(options);
+        this.config(options);
         $r.assign(this);
     }
     readonly routeInitMap: Map<string | RegExp | RouteFunction, PageWidgetOptions<P>> = new Map;
@@ -27,9 +27,9 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
         create: new Set as Set<EventFunction<ViewWidgetEvents<P>, 'create'>>,
     };
 
-    options(options?: ViewWidgetOptions<P>): this {
+    config(options?: ViewWidgetOptions<P>): this {
         if (options === undefined) return this;
-        super.options(options);
+        super.config(options);
         if (options.page) (<Mutable<ViewWidget<P>>>this).Page = options.page;
         if (options.titleStyle) this.titleStyle = options.titleStyle;
         return this
@@ -127,8 +127,8 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
             }
             newPage.setTitle();
             await newPage.init();
-            newPage._open();
             this.insert(newPage);
+            newPage._open();
         }
         else {
             this.__transition_handler__(oldPage, newPage, navDir);
@@ -146,7 +146,7 @@ export class ViewWidget<P extends PageWidget = PageWidget> extends ParentWidget 
     }
 }
 
-export interface ViewWidgetOptions<P> extends ParentWidgetOptions {
+export interface ViewWidgetOptions<P> extends ParentWidgetConfig {
     page?: new (...args: any[]) => P;
     titleStyle?: TitleStyle;
 }

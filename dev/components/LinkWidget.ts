@@ -1,8 +1,8 @@
 import { __widget_shared__ } from "../index";
-import { ParentWidget, ParentWidgetOptions } from "./ParentWidget";
+import { ParentWidget, ParentWidgetConfig } from "./ParentWidget";
 
 export class LinkWidget extends ParentWidget {
-    override readonly dom: HTMLAnchorElement = this.dom;
+    readonly dom = super.dom as HTMLAnchorElement;
     loadFn?: (url: string, e: Event, w: this) => void;
     override readonly focusable = true;
     constructor(options?: LinkWidgetBuildOptions) {
@@ -35,6 +35,6 @@ export class LinkWidget extends ParentWidget {
     }
 }
 
-export interface LinkWidgetBuildOptions extends ParentWidgetOptions {
+export interface LinkWidgetBuildOptions extends ParentWidgetConfig {
     url?: string;
 }

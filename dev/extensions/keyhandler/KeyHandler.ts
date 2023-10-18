@@ -1,5 +1,4 @@
-import { Multable, WidgetContent } from "../../components/ParentWidget";
-import { $w, Widget, WidgetUtil } from "../../index";
+import { $w, Widget, WidgetContent, WidgetUtil } from "../../index";
 
 export const __KEY_HANDLER_LIST__ = new Set<KeyHandler>;
 

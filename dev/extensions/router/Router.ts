@@ -95,12 +95,15 @@ export class Router {
         if (!found) this.onNotFound();
 
         function getPage(view: ViewWidget, pathIndex: number) {
-            for (let i = pathIndex; i < paths.length; i ++) {
-                const pagePath = paths[i].replace(view.path, '/').replace('//', '/')
-                if (pagePath === '/' && paths[i + 1]) continue; 
-                // Test route longest path
+            // reverse to test longest path first
+            const view_paths = paths.slice(pathIndex).reverse();
+            for (let i = 0; i < paths.length; i ++) {
+                const pagePath = view_paths[i].replace(view.path, '/').replace('//', '/')
                 const page = view.switch(pagePath, navDir);
-                if (page) found = true
+                if (page) {
+                    found = true
+                    return;
+                }
             }
         }
     }

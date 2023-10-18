@@ -1,4 +1,3 @@
-import { Mutable } from "../global";
 import { $w, WidgetTagNameMap, WidgetUtil, __widget_shared__ } from "../index";
 import { ParentWidget } from "./ParentWidget";
 
@@ -9,11 +8,11 @@ export class Widget {
     private readonly __onRemove__: Set<(widget: Widget) => void> = new Set;
     private __listeners__: Map<Function, Function> = new Map;
     readonly hidden: boolean = false;
-    constructor(options: WidgetBuildOptions) {
-        this.dom = document.createElement(options.tagName);
-        this.id(options.id);
+    constructor(config: WidgetBuildConfig) {
+        this.dom = document.createElement(config.tagName);
+        this.id(config.id);
         this.dom.$widget = this;
-        if (options.class) this.class(...options.class);
+        if (config.class) this.class(...config.class);
         // WidgetUtil.autobind(this);
     }
 
@@ -62,7 +61,7 @@ export class Widget {
         return this;
     }
 
-    options(options: WidgetOptions): this {
+    config(options: WidgetConfig): this {
         this.id(options.id);
         if (options.class) this.class(...(options.class));
         if (options.css) this.css(options.css);
@@ -217,13 +216,13 @@ export class Widget {
     }
 }
 
-export interface WidgetBuildOptions extends WidgetDomBuildOptions, WidgetOptions {}
+export interface WidgetBuildConfig extends WidgetDomBuildConfig, WidgetConfig {}
 
-export interface WidgetDomBuildOptions {
+export interface WidgetDomBuildConfig {
     tagName: string;
 }
 
-export interface WidgetOptions {
+export interface WidgetConfig {
     id?: string;
     class?: string[];
     css?: CSSOptions;

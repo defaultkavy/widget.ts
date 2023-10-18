@@ -1,23 +1,38 @@
-import { Optional } from "./ParentWidget";
-import { Widget, WidgetOptions } from "./Widget";
+import { WidgetUtil } from "../structures/WidgetUtil";
+import { Widget, WidgetConfig } from "./Widget";
 
 export class InputWidget extends Widget {
-    override readonly dom: HTMLInputElement = this.dom;
-    constructor(options?: InputWidgetBuildOptions) {
+    readonly dom = super.dom as HTMLInputElement;
+    constructor(options?: InputWidgetConfig) {
         super({...options, tagName: 'input'})
     }
 
+    config(options: InputWidgetConfig): this {
+        super.config(options);
+        this.placeholder(options.placeholder);
+        this.type(options.type);
+        this.disable(options.disable);
+        this.maxLength(options.maxLength);
+        this.inputMode(options.inputMode);
+        this.multiple(options.multiple);
+        this.name(options.name);
+        if (options.accept) this.accept(...(options.accept));
+        this.spellcheck(options.spellcheck);
+        this.required(options.required);
+        return this;
+    }
+
     disable(): boolean;
-    disable(boolean: boolean): this;
-    disable(boolean?: boolean) {
+    disable(boolean: Optional<boolean>): this;
+    disable(boolean?: Optional<boolean>) {
         if (!arguments.length) return this.dom.disabled;
         if (typeof boolean === 'boolean') this.dom.disabled = boolean;
         return this;
     }
 
     type(): string
-    type(type?: keyof InputWidgetTypes): this
-    type(type?: keyof InputWidgetTypes) {
+    type(type?: Optional<keyof InputWidgetTypes>): this
+    type(type?: Optional<keyof InputWidgetTypes>) {
         if (!arguments.length) return this.dom.type;
         if (type === undefined) return this;
         this.dom.type = type;
@@ -51,21 +66,11 @@ export class InputWidget extends Widget {
         return this;
     }
 
-
     name(): string
     name(name: Optional<string>): this
     name(name?: Optional<string>): this | string {
         if (!arguments.length) return this.dom.name;
-        if (name === undefined) return this;
-        this.dom.name = name;
-        return this;
-    }
-
-    options(options: InputWidgetBuildOptions): this {
-        super.options(options);
-        if (options.placeholder) this.placeholder(options.placeholder);
-        if (options.maxLength) this.maxLength(options.maxLength);
-        if (options.inputMode) this.inputMode(options.inputMode);
+        if (typeof name === 'string') this.dom.name = name;
         return this;
     }
     
@@ -79,9 +84,10 @@ export class InputWidget extends Widget {
     }
 
     accept(): string
-    accept(...fileType: InputFileAcceptTypes[]): this
-    accept(...fileType: InputFileAcceptTypes[]): this | string {
+    accept(...fileType: Optional<InputFileAcceptTypes>[]): this
+    accept(...fileType: Optional<InputFileAcceptTypes>[]): this | string {
         if (!arguments.length) return this.dom.accept;
+        fileType = WidgetUtil.undefinedFilter(fileType);
         this.dom.accept = fileType.toString();
         return this;
     }
@@ -91,6 +97,14 @@ export class InputWidget extends Widget {
     multiple(enable?: Optional<boolean>): this | boolean {
         if (!arguments.length) return this.dom.multiple;
         if (typeof enable === 'boolean') this.dom.multiple = enable;
+        return this;
+    }
+
+    required(): boolean
+    required(required: Optional<boolean>): this
+    required(required?: Optional<boolean>): this | boolean {
+        if (!arguments.length) return this.dom.required;
+        if (typeof required === 'boolean') this.dom.required = required;
         return this;
     }
 
@@ -131,11 +145,17 @@ export class InputWidget extends Widget {
     }
 }
 
-export interface InputWidgetBuildOptions extends WidgetOptions {
+export interface InputWidgetConfig extends WidgetConfig {
+    type?: keyof InputWidgetTypes;
+    disable?: boolean;
+    multiple?: boolean;
+    name?: string;
+    accept?: InputFileAcceptTypes[];
+    spellcheck?: boolean;
     placeholder?: string;
     inputMode?: InputMode;
     maxLength?: number;
-
+    required?: boolean;
 }
 
 export type InputMode = 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';

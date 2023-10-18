@@ -1,6 +1,5 @@
 import { WidgetContent, ParentWidget } from "../components/ParentWidget";
 import { Widget } from "../components/Widget";
-import { Mutable } from "../global";
 import { $w } from "../index";
 
 /**
@@ -9,10 +8,10 @@ import { $w } from "../index";
  * *Generic parameter only accept Widget | Text | HTMLElement types, 
  * using Exclude<T, BaseContent> to exclude 'string' and 'undefined' types in this parameter.*
  */
-export class WidgetManager<T extends WidgetContent = WidgetContent> {
+export class WidgetManager<T extends WidgetContent = WidgetContent, P extends ParentWidget = ParentWidget> {
     protected cache: Set<T> = new Set;
-    widget: ParentWidget;
-    constructor(widget: ParentWidget) {
+    widget: P;
+    constructor(widget: P) {
         this.widget = widget;
     }
 

@@ -1,7 +1,6 @@
-import { $w } from "../index";
+import { $w, WidgetUtil } from "../index";
 import { WidgetManager } from "../structures/WidgetManager";
-import { InputWidget } from "./InputWidget";
-import { Widget, WidgetBuildOptions, WidgetOptions } from "./Widget";
+import { Widget, WidgetBuildConfig, WidgetConfig } from "./Widget";
 
 // catch child insert without widget function
 const CHILD_OBSERVER = new MutationObserver(p1 => {
@@ -16,11 +15,18 @@ const CHILD_OBSERVER = new MutationObserver(p1 => {
     })
 })
 export class ParentWidget extends Widget {
-    override readonly dom: HTMLElement = this.dom;
+    readonly dom: HTMLElement = super.dom;
     readonly children = new WidgetManager(this);
-    constructor(options: ParentWidgetBuildOptions) {
+    constructor(options: ParentWidgetBuildConfig) {
         super({...options, tagName: options.tagName})
         CHILD_OBSERVER.observe(this.dom, {childList: true})
+        this.editable('plaintext-only')
+    }
+
+    config(options: ParentWidgetConfig): this {
+        super.config(options);
+        this.editable(options.editable);
+        return this;
     }
 
     /**
@@ -34,8 +40,8 @@ export class ParentWidget extends Widget {
      * @param resolver - string or {@link WidgetContent}, can be array.
      * @returns {this}
      */
-    content(resolver: Complex<Multable<Optional<Content>>>): this;
-    content(resolver?: Complex<Multable<Optional<Content>>>): this | string {
+    content(resolver: Complex<Multable<Optional<Content>>> | (($this: this) => Complex<Multable<Optional<Content>>>)): this;
+    content(resolver?: Complex<Multable<Optional<Content>>> | (($this: this) => Complex<Multable<Optional<Content>>>)): this | string {
         if (!arguments.length) return this.dom.innerText;
         this.clear();
         this.insert(resolver);
@@ -48,9 +54,10 @@ export class ParentWidget extends Widget {
      * @param resolver - string or {@link WidgetContent}, can be array.
      * @returns {this}
      */
-    insert(resolver: Complex<Multable<Optional<Content>>>, position?: number): this {
+    insert(resolver?: Complex<Multable<Optional<Content>>> | (($this: this) => Complex<Multable<Optional<Content>>>), position?: number): this {
         if (resolver instanceof Array) resolver.forEach(content => this.insert(content));
         else if (typeof resolver === 'string') this.children.add(new Text(resolver), position);
+        else if (resolver instanceof Function) this.insert(resolver(this));
         else this.children.add(resolver, position);
         return this;
     }
@@ -78,43 +85,12 @@ export class ParentWidget extends Widget {
         return this;
     }
 
-    options(options: ParentWidgetOptions): this {
-        super.options(options);
-        if (options.editable) this.dom.contentEditable = 'true';
-        return this;
-    }
-
-    group(name: string, contents: Content[]) {
-        for (const content of contents) {
-            if (!( content instanceof Widget)) continue;
-            if (content.is('label')) {
-                content.for(name);
-            }
-            else if (content instanceof InputWidget) {
-                content.id(name);
-                content.dom.name = name;
-            }
-            else if (content instanceof ExtensionInputWidget) {
-                content.name(name);
-            }
-        }
-        this.insert(contents);
-        return this;
-    }
-
-    editable(): string
-    editable(value: boolean | 'plaintext-only'): this
-    editable(value?: boolean | 'plaintext-only') {
-        if (!arguments.length) return this.dom.contentEditable;
-        if (value === undefined) return this;
-        this.dom.contentEditable = `${value}`
-        return this;
-    }
+    editable = WidgetUtil.fluent(this, this.dom, 'contentEditable').overload<'plaintext-only' | boolean>();
 }
 
-export interface ParentWidgetBuildOptions extends WidgetBuildOptions, ParentWidgetOptions {}
+export interface ParentWidgetBuildConfig extends WidgetBuildConfig, ParentWidgetConfig {}
 
-export interface ParentWidgetOptions extends WidgetOptions {
+export interface ParentWidgetConfig extends WidgetConfig {
     editable?: boolean;
 }
 
@@ -123,12 +99,6 @@ export type WidgetContent = Widget | Text | HTMLElement;
 export type BaseContent = string;
 
 export type Content = BaseContent | WidgetContent | undefined;
-
-export type Optional<C> = C | undefined;
-
-export type Multable<C> = C | C[];
-
-export type Complex<C> = C | Complex<C>[];
 
 /**
  * Extension Widget for custom input type
@@ -166,6 +136,6 @@ export abstract class ExtensionInputWidget extends ParentWidget {
     }
 }
 
-export interface ExtensionInputWidgetBuildOptions extends ParentWidgetBuildOptions, ExtensionInputWidgetOptions {}
+export interface ExtensionInputWidgetBuildOptions extends ParentWidgetBuildConfig, ExtensionInputWidgetOptions {}
 
-export interface ExtensionInputWidgetOptions extends ParentWidgetOptions {};
+export interface ExtensionInputWidgetOptions extends ParentWidgetConfig {};

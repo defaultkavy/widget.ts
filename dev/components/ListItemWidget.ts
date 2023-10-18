@@ -1,5 +1,5 @@
 import { WidgetManager } from "../structures/WidgetManager";
-import { ParentWidget, ParentWidgetOptions, WidgetContent } from "./ParentWidget";
+import { ParentWidget, ParentWidgetConfig, WidgetContent } from "./ParentWidget";
 
 export class ListItemWidget<C extends WidgetContent> extends ParentWidget {
     constructor(options?: ListItemWidgetBuildOptions) {
@@ -8,8 +8,8 @@ export class ListItemWidget<C extends WidgetContent> extends ParentWidget {
             if (options.value && this.dom instanceof HTMLLIElement) this.dom.value = options.value
         }
     }
-    override readonly dom: HTMLUListElement | HTMLOListElement | HTMLDListElement = this.dom;
-    children: WidgetManager<C> = this.children;
+    readonly dom = super.dom as HTMLUListElement | HTMLOListElement | HTMLDListElement;
+    children = super.children as WidgetManager<C>;
     item?: C;
     
     bind(item: C) {
@@ -23,5 +23,5 @@ export interface ListItemWidgetBuildOptions extends ListItemWidgetOptions {
     value?: number;
 }
 
-export interface ListItemWidgetOptions extends ParentWidgetOptions {
+export interface ListItemWidgetOptions extends ParentWidgetConfig {
 }

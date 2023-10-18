@@ -1,5 +1,4 @@
-import { ParentWidget, ParentWidgetOptions } from "../../components/ParentWidget";
-import { Mutable } from "../../global";
+import { ParentWidget, ParentWidgetConfig } from "../../components/ParentWidget";
 import { TitleStyle } from "./ViewWidget";
 
 export class PageWidget extends ParentWidget {
@@ -81,7 +80,7 @@ export class PageWidget extends ParentWidget {
 
 export type PageInitFunction<P extends PageWidget> = (page: P) => Promise<void> | void;
 
-export interface PageWidgetOptions<P extends PageWidget> extends Omit<ParentWidgetOptions, 'tagName'> {
+export interface PageWidgetOptions<P extends PageWidget> extends Omit<ParentWidgetConfig, 'tagName'> {
     init: PageInitFunction<P>,
     titleStyle?: TitleStyle;
 }

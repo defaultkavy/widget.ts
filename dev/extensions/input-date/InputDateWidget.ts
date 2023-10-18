@@ -1,7 +1,7 @@
-import { InputWidget, InputWidgetBuildOptions } from "../../components/InputWidget";
-import { ExtensionInputWidget, ParentWidgetOptions } from "../../components/ParentWidget";
+import { InputWidget, InputWidgetConfig } from "../../components/InputWidget";
+import { ExtensionInputWidget, ParentWidgetConfig } from "../../components/ParentWidget";
 import { Mutable } from "../../global";
-import { $w, FocusManager, Widget, __widget_shared__ } from "../../index";
+import { $w, Widget, __widget_shared__ } from "../../index";
 
 export class InputDateWidget extends ExtensionInputWidget {
     day = $w('input');
@@ -14,7 +14,7 @@ export class InputDateWidget extends ExtensionInputWidget {
     private __onComplete__?: (widget: this) => void;
     constructor(options?: InputDateWidgetBuildOptions) {
         super({...options, tagName: 'input-date'})
-        if (options) this.options(options);
+        if (options) this.config(options);
         this.__build__();
         this.__listen__();
     }
@@ -28,8 +28,8 @@ export class InputDateWidget extends ExtensionInputWidget {
         return this;
     }
 
-    options(options: InputDateWidgetBuildOptions): this {
-        super.options(options);
+    config(options: InputDateWidgetBuildOptions): this {
+        super.config(options);
         if (options.dateString) this.setDateString(options.dateString);
         return this;
     }
@@ -55,24 +55,24 @@ export class InputDateWidget extends ExtensionInputWidget {
     }
 
     private __build__() {
-        const options: () => InputWidgetBuildOptions = () => {
+        const options: () => InputWidgetConfig = () => {
             return {
                 inputMode: 'decimal'
             }
         }
         this.day
             .setAttribute('type', 'date-day')
-            .options(options())
+            .config(options())
             .maxLength(2)
             .placeholder('DD')
         this.month
             .setAttribute('type', 'date-month')
-            .options(options())
+            .config(options())
             .maxLength(2)
             .placeholder('MM')
         this.year
             .setAttribute('type', 'date-year')
-            .options(options())
+            .config(options())
             .maxLength(4)
             .placeholder('YYYY')
         const regex = /(dd|mm|yyyy)/g;
@@ -175,7 +175,7 @@ export class InputDateWidget extends ExtensionInputWidget {
     }
 }
 
-export interface InputDateWidgetBuildOptions extends ParentWidgetOptions {
+export interface InputDateWidgetBuildOptions extends ParentWidgetConfig {
     dateString: string;
 }
 

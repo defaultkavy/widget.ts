@@ -13,6 +13,10 @@ import { TextWidget } from './components/TextWidget'
 import { WidgetUtil } from './structures/WidgetUtil'
 import { CanvasWidget } from './components/CanvasWidget'
 import { SVGWidget } from './components/SVGWidget'
+import { $r } from './extensions/router/Router'
+import { OptionWidget } from './components/OptionWidget'
+import { OptionGroupWidget } from './components/OptionGroupWidget'
+import { SelectWidget } from './components/SelectWidget'
 
 export * from './components/Widget'
 export * from './components/TextWidget'
@@ -29,6 +33,9 @@ export * from './components/FormWidget'
 export * from './components/LabelWidget'
 export * from './components/CanvasWidget'
 export * from './components/SVGWidget'
+export * from './components/OptionGroupWidget'
+export * from './components/OptionWidget'
+export * from './components/SelectWidget'
 export * from './extensions/router/Router'
 export * from './extensions/router/PageWidget'
 export * from './extensions/router/ViewWidget'
@@ -57,6 +64,7 @@ export function $w<K extends WidgetCreateFn>(fn: K): ReturnType<K>
 export function $w<K extends Widget>(object: {$widget: K}): K;
 export function $w<K extends HTMLElement>(element: K): ParentWidget;
 export function $w(resolver: any) {
+    `This application is using Widget.ts`
     if (resolver instanceof Widget) return resolver;
     if (resolver instanceof Function) return resolver();
     if (resolver instanceof HTMLElement) WidgetUtil.widgetify(resolver);
@@ -86,6 +94,9 @@ export function $w(resolver: any) {
             case 'input': return new InputWidget();
             case 'canvas': return new CanvasWidget();
             case 'svg': return new SVGWidget();
+            case 'select': return new SelectWidget();
+            case 'option': return new Option();
+            case 'optgroup': return new OptionGroupWidget();
         }
         return new ParentWidget({
             tagName: resolver
@@ -94,8 +105,30 @@ export function $w(resolver: any) {
     throw '$w: unknown type of parameter'
 }
 
+$w.WidgetUtil = WidgetUtil;
 $w.global = WidgetShared;
 $w.dom = dom
+$w.Widget = Widget;
+$w.Parent = ParentWidget;
+$w.Button = ButtonWidget;
+$w.Division = DivisionWidget;
+$w.Form = FormWidget;
+$w.Image = ImageWidget;
+$w.Input = InputWidget;
+$w.Label = LabelWidget;
+$w.Link = LinkWidget;
+$w.ListItem = ListItemWidget;
+$w.List = ListWidget;
+$w.Text = TextWidget;
+$w.Canvas = CanvasWidget;
+$w.SVG = SVGWidget;
+$w.Option= OptionWidget;
+$w.OptionGroup= OptionGroupWidget;
+$w.Select = SelectWidget;
+//@ts-expect-error
+globalThis.$w = $w;
+//@ts-expect-error
+globalThis.$r = $r;
 
 function dom(element: Widget | Node): HTMLElement;
 function dom(element: Widget | Node | undefined): HTMLElement | undefined;
@@ -134,4 +167,7 @@ export type WidgetTagNameMap = {
     "input": InputWidget;
     "canvas": CanvasWidget;
     "svg": SVGWidget;
+    "select": SelectWidget;
+    "option": OptionWidget;
+    "optgroup": OptionGroupWidget;
 }

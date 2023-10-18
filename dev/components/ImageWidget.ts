@@ -1,12 +1,11 @@
-import { Widget, WidgetOptions } from "./Widget";
+import { Widget, WidgetConfig } from "./Widget";
 
 export class ImageWidget extends Widget {
-    override readonly dom: HTMLImageElement = this.dom;
-    anchor: [number, number] = [0.5, 0.5];
+    readonly dom = super.dom as HTMLImageElement;
     progress = 0;
     constructor(options?: ImageWidgetBuildOptions) {
         super({...options, tagName: 'img'})
-        if (options) this.options(options);
+        if (options) this.config(options);
     }
     
     src(): string
@@ -30,9 +29,17 @@ export class ImageWidget extends Widget {
         return this;
     }
 
+    alt(): string
+    alt(alt?: Optional<string>): this
+    alt(alt?: Optional<string>) {
+        if (!arguments.length) return this.dom.alt;
+        if (typeof alt === 'string') this.dom.alt = alt;
+        return this;
+    }
+
     loading(): string;
-    loading(type: 'eager' | 'lazy'): this;
-    loading(type?: 'eager' | 'lazy'): this | string {
+    loading(type: Optional<ImageLoading>): this;
+    loading(type?: Optional<ImageLoading>): this | string {
         if (!arguments.length) return this.dom.loading;
         if (typeof type === 'string') this.dom.loading = type;
         return this;
@@ -58,17 +65,11 @@ export class ImageWidget extends Widget {
         })
     }
 
-    set asset(asset: ImageAssetOptions) {
-        this.dom.src = asset.url;
-        if (asset.anchor) this.anchor = asset.anchor;
-    }
-
-    options(options: ImageWidgetBuildOptions): this {
-        super.options(options);
-        this.dom.src = options.url;
-        if (options.alt) this.dom.alt = options.alt;
-        if (options.anchor) this.anchor = options.anchor;
-        if (options.lazyload) this.dom.loading = 'lazy';
+    config(options: ImageWidgetBuildOptions): this {
+        super.config(options);
+        this.src(options.src);
+        this.alt(options.alt);
+        this.loading(options.loading);
         if (options.width) this.dom.width = options.width;
         if (options.height) this.dom.height = options.height;
         return this;
@@ -123,19 +124,16 @@ export class ImageWidget extends Widget {
     }
 }
 
-export interface ImageWidgetBuildOptions extends WidgetOptions, ImageAssetOptions {
-    lazyload?: boolean;
+export interface ImageWidgetBuildOptions extends WidgetConfig {
+    loading?: ImageLoading;
     width?: number;
     height?: number;
-}
-
-export interface ImageAssetOptions {
-    url: string;
-    anchor?: [number, number];
     alt?: string;
+    src: string;
 }
 
 export type ImageContent = string | File;
+export type ImageLoading = 'eager' | 'lazy';
 
 export type Dimension = {
     width?: number;

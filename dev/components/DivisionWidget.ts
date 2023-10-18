@@ -1,4 +1,4 @@
-import { ParentWidget, ParentWidgetOptions } from "./ParentWidget";
+import { ParentWidget, ParentWidgetConfig } from "./ParentWidget";
 
 /**
  * ### DIV
@@ -7,12 +7,12 @@ import { ParentWidget, ParentWidgetOptions } from "./ParentWidget";
  * @extends ParentWidget
  */
 export class DivisionWidget extends ParentWidget {
-    override readonly dom: HTMLDivElement = this.dom;
+    readonly dom = super.dom as HTMLDivElement;
     constructor(options?: DivisionWidgetBuildOptions) {
         super({...options, tagName: 'div'})
     }
 }
 
-export interface DivisionWidgetBuildOptions extends ParentWidgetOptions {
+export interface DivisionWidgetBuildOptions extends ParentWidgetConfig {
 
 }

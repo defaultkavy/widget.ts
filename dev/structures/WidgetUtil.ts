@@ -3,11 +3,9 @@ import { ImageWidget } from "../components/ImageWidget";
 import { LinkWidget } from "../components/LinkWidget";
 import { ListItemWidget } from "../components/ListItemWidget";
 import { ListWidget } from "../components/ListWidget";
-import { Multable, ParentWidget } from "../components/ParentWidget";
-import { SVGWidget } from "../components/SVGWidget";
 import { TextWidget } from "../components/TextWidget";
 import { Widget } from "../components/Widget";
-import { WidgetTagNameMap } from "../index";
+import { ParentWidget, WidgetTagNameMap } from "../index";
 
 export class WidgetUtil {
     static widgetify = widgetify;
@@ -15,6 +13,50 @@ export class WidgetUtil {
     static autobind = autoBind;
     static rem(multiply: number) {
         return multiply * parseFloat(getComputedStyle(document.documentElement).fontSize)
+    }
+    static undefinedFilter<T>(arr: (T | undefined)[]) {
+        return arr.filter(value => value !== undefined) as T[];
+    }
+    static getset<I, O extends Object, K extends keyof O>(instance: I, iarguments: IArguments, target: O, property: K) {
+        const prop = target[property]
+        if (!iarguments.length) {
+            if (prop instanceof Function) return prop.bind(target)();
+            else return target[property]
+        };
+        if (typeof iarguments[0] !== 'undefined') {
+            if (prop instanceof Function) prop.bind(target)(...iarguments);
+            else target[property] = iarguments[0];
+        }
+        return instance as I;
+    }
+
+    /** A fluent method builder with type guard.
+     * 
+     * @param instance The object bind to function
+     * @param target The property target
+     * @param property 
+     * @returns 
+     */
+    static fluent<I, O extends Object, K extends keyof O = keyof O>(instance: I, target: O, property: K) {
+        type FluentMethod<Instance, Type, ReturnType = Instance> = {
+            (this: Instance): ReturnType;
+            (this: Instance, value: Type | undefined): Instance;
+        }
+        type Fluent<Instance, Type, ReturnType = Instance> = {
+            /** Fluent method type of parameters, fill in the type in generic. */
+            overload: <T, RT = ReturnType>() => FluentMethod<Instance, T, RT>;
+            fn: FluentMethod<Instance, T>;
+        }
+        // if property is function, get arguments type
+        type T = O[K] extends (...args: (infer A)[]) => any ? A : O[K];
+        const fn = (function (this: I, param: T | undefined) {
+            return WidgetUtil.getset(this, arguments, target, property);
+        }).bind(instance) as FluentMethod<I, T>;
+        const fluentObj = {
+            fn: fn,
+            overload: fn
+        } as Fluent<I, T>;
+        return fluentObj;
     }
 }
 
@@ -49,11 +91,10 @@ export function widgetify(element: HTMLElement, options?: WidgetifyOptions) {
                 case 'CODE': widget = new TextWidget('code'); break;
                 case 'A': widget = new LinkWidget({url: node instanceof HTMLAnchorElement ? node.href : undefined}); break;
                 case 'IMG': widget = new ImageWidget({
-                    url: node instanceof HTMLImageElement ? node.src : '',
+                    src: node instanceof HTMLImageElement ? node.src : '',
                     alt: node instanceof HTMLImageElement ? node.alt : undefined,
                     width: node instanceof HTMLImageElement ? node.width : undefined,
                     height: node instanceof HTMLImageElement ? node.height : undefined,
-                    anchor: node instanceof HTMLImageElement ? node.dataset.anchor ? JSON.parse(node.dataset.anchor) : [0.5, 0.5] : [0.5, 0.5],
                     class: node instanceof HTMLImageElement ? Array.from(node.classList) : undefined,
                 }); break;
                 case 'UL': widget = new ListWidget('ul'); break;
